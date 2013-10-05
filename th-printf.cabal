@@ -23,6 +23,7 @@ library
   -- other-extensions:    
   build-depends:       base >=4.6 && <4.7
                      , attoparsec
+                     , bytestring
                      , template-haskell
                      , text
   -- hs-source-dirs:      
