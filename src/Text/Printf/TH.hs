@@ -9,6 +9,7 @@
 module Text.Printf.TH (s, st, lt) where
 
 import Control.Applicative
+import Control.Monad.IO.Class
 import Data.Attoparsec.Text hiding (space)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as LB
@@ -65,22 +66,18 @@ quoterOfType m b = QuasiQuoter
                  , quoteDec = error "printf cannot be used in declaration context"
                  }
 
-s, st, lt, sb, lb, sb8, lb8, sP, stP, ltP, sbP, lbP, sb8P, lb8P :: QuasiQuoter
+s, st, lt, sb, lb, sP, stP, ltP, sbP, lbP :: QuasiQuoter
 
 s = quoterOfType ''String False
 st = quoterOfType ''T.Text False
 lt = quoterOfType ''LT.Text False
 sb = quoterOfType ''B.ByteString False
 lb = quoterOfType ''LB.ByteString False
-sb8 = quoterOfType ''B8.ByteString False
-lb8 = quoterOfType ''LB8.ByteString False
 sP = quoterOfType ''String True
 stP = quoterOfType ''T.Text True
 ltP = quoterOfType ''LT.Text True
 sbP = quoterOfType ''B.ByteString True
 lbP = quoterOfType ''LB.ByteString True
-sb8P = quoterOfType ''B8.ByteString True
-lb8P = quoterOfType ''LB8.ByteString True
 
 formatP :: Parser [Chunk]
 formatP = many1 ( char '%' *> chunkP
@@ -292,10 +289,10 @@ instance ToChar Char where asChar = id
 instance ToChar Int where asChar = chr
 instance ToChar Word8 where asChar = chr . fromIntegral
 
-class Printable a where output :: a -> IO ()
+class Printable a where output :: MonadIO m => a -> m ()
 
-instance Printable String where output = putStrLn
-instance Printable T.Text where output = T.putStrLn
-instance Printable LT.Text where output = LT.putStrLn
-instance Printable B.ByteString where output = B8.putStrLn
-instance Printable LB.ByteString where output = LB8.putStrLn
+instance Printable String where output = liftIO . putStrLn
+instance Printable T.Text where output = liftIO . T.putStrLn
+instance Printable LT.Text where output = liftIO . LT.putStrLn
+instance Printable B.ByteString where output = liftIO . B8.putStrLn
+instance Printable LB.ByteString where output = liftIO . LB8.putStrLn
