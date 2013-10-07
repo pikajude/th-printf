@@ -6,7 +6,7 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Text.Printf.TH (s, st, lt) where
+module Text.Printf.TH (s, st, lt, sb, lb, sP, stP, ltP, sbP, lbP) where
 
 import Control.Applicative
 import Control.Monad.IO.Class
