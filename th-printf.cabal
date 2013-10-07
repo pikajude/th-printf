@@ -33,4 +33,4 @@ test-suite format
   type: exitcode-stdio-1.0
   main-is: format.hs
   hs-source-dirs: tests
-  build-depends: base, bytestring, hspec, HUnit, QuickCheck, text, th-printf
+  build-depends: base, bytestring, hspec, HUnit, QuickCheck, template-haskell, text, th-printf
