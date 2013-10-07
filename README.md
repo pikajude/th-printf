@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/joelteon/th-printf.png)](https://travis-ci.org/joelteon/th-printf)
 th-printf
 =========
 aims to make printf for people who like to use printf safe and reasonably efficient.
