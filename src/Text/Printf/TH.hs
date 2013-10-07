@@ -29,6 +29,9 @@ import Data.Word
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import Numeric
+import Prelude hiding (lex)
+import Text.ParserCombinators.ReadP (readP_to_S)
+import Text.Read.Lex
 
 data Specifier = SignedDec | Octal | UnsignedHex | UnsignedHexUpper
                | FloatS | FloatUpper | Sci | SciUpper | ShorterFloat | ShorterFloatUpper
@@ -50,9 +53,14 @@ data Chunk = Chunk
 
 quoterOfType :: Name -> Bool -> QuasiQuoter
 quoterOfType m b = QuasiQuoter
-                 { quoteExp = \s' -> case parseOnly formatP (pack s') of
-                        Right r -> chunksToFormatter r m b
-                        Left m' -> error $ "Error when parsing format string: " ++ show m'
+                 { quoteExp = \s' -> let lexed = readP_to_S lex $ '"' : concatMap escape s' ++ "\""
+                                         escape '"' = "\\\""
+                                         escape m' = [m']
+                                     in case lexed of
+                        [(String str,"")] -> case parseOnly formatP (pack str) of
+                            Right r -> chunksToFormatter r m b
+                            Left m' -> error $ "Error when parsing format string: " ++ show m'
+                        _ -> error "Error when parsing format string"
                  , quotePat = error "printf cannot be used in pattern context"
                  , quoteType = error "printf cannot be used in type context"
                  , quoteDec = error "printf cannot be used in declaration context"
