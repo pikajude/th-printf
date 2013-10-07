@@ -1,0 +1,14 @@
+language: haskell
+before_install:
+  - cabal install --only-dependencies $mode
+
+install:
+  - cabal configure $mode
+  - cabal build
+
+script:
+  - hlint -c . --ignore="Parse error"
+  - cabal test --show-details=always
+
+env:
+  - mode="--enable-tests"
