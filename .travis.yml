@@ -1,7 +1,7 @@
 language: haskell
 before_install:
+  - sudo apt-get -qy install hlint
   - cabal install --only-dependencies $mode
-  - cabal install hlint
 
 install:
   - cabal configure $mode
