@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                th-printf
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            Compile-time printf
 description:         Quasiquoters for printf: string, bytestring, text.
 homepage:            https://github.com/joelteon/th-printf

@@ -30,5 +30,7 @@ submit a patch, please feel free):
 [s|%0*d|] 5 10 -- "00010"
 ```
 
+There's also another format specifier `%?`, which accepts any `Show`able datatype.
+
 There are five additional formatters: `sP`, `stP`, and so on; these print out the formatted string rather than returning
 it. Their types are `MonadIO m => ... -> m ()`.

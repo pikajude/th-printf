@@ -35,7 +35,7 @@ import Text.Read.Lex
 
 data Specifier = SignedDec | Octal | UnsignedHex | UnsignedHexUpper
                | FloatS | FloatUpper | Sci | SciUpper | ShorterFloat | ShorterFloatUpper
-               | CharS | Str | Percent deriving (Eq, Show, Data, Typeable)
+               | CharS | Str | Percent | Showable deriving (Eq, Show, Data, Typeable)
 
 data Flag = Minus | Plus | Space | Hash | Zero deriving (Eq, Show, Data, Typeable)
 
@@ -121,6 +121,7 @@ specP = SignedDec <$ (char 'd' <|> char 'i')
     <|> CharS <$ char 'c'
     <|> Str <$ char 's'
     <|> Percent <$ char '%'
+    <|> Showable <$ char '?'
 
 data PrintfArg = PrintfArg
                { paSpec :: Chunk
@@ -170,6 +171,7 @@ arg c@PrintfArg{valArg = Just v} = (\n -> dispatch n c v) $
         ShorterFloatUpper -> 'showUpperShorter
         CharS -> 'showCharP
         Str -> 'showStringP
+        Showable -> 'showShowP
         m -> error $ "Unhandled specifier: " ++ show m
 arg m = error $ "Unhandled argument: " ++ show m
 
@@ -236,6 +238,9 @@ showCharP _ _ _ c = [asChar c]
 
 showStringP :: ToString a => Chunk -> Integer -> Integer -> a -> String
 showStringP pa w _ n = space pa . pad w pa $ toString n
+
+showShowP :: Show a => Chunk -> Integer -> Integer -> a -> String
+showShowP pa w _ n = space pa . pad w pa $ show n
 
 space :: Chunk -> String -> String
 space c = if Space `elem` flags c && Plus `notElem` flags c then (' ':) else id
