@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main where
@@ -15,8 +16,10 @@ import Test.HUnit
 import Test.QuickCheck
 import Text.Printf.TH
 
+#if __GLASGOW_HASKELL__ <= 706
 instance Eq ErrorCall where
     ErrorCall m == ErrorCall n = m == n
+#endif
 
 main :: IO ()
 main = hspec $ do
