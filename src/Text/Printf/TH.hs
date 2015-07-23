@@ -139,7 +139,7 @@ chunksToFormatter cs ty pr = do
     let processor = if pr then [e|output|] else [e|id|]
     lamE (concatMap collectArgs ns) [e|$(processor) (mconcat $(listE $ map arg ns) :: $(conT ty))|]
     where
-        argify p@Plain{..} = return $ PrintfArg p Nothing Nothing Nothing
+        argify p@Plain{} = return $ PrintfArg p Nothing Nothing Nothing
         argify c@Chunk{spec = Percent} = return $ PrintfArg c Nothing Nothing Nothing
         argify c@Chunk{width = w, precision = p} = do
             wa <- if w == Just WidthStar

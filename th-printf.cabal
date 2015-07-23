@@ -14,7 +14,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Text.Printf.TH
-  build-depends:       base <4.8
+  build-depends:       base <4.10
                      , attoparsec
                      , bytestring
                      , template-haskell
