@@ -1,37 +1,37 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveDataTypeable  #-}
+{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE QuasiQuotes         #-}
+{-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell     #-}
+{-# LANGUAGE TupleSections       #-}
 
 module Text.Printf.TH (s, st, lt, sb, lb, sP, stP, ltP, sbP, lbP) where
 
-import Control.Applicative
-import Control.Monad.IO.Class
-import Data.Attoparsec.Text hiding (space)
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as LB
-import qualified Data.ByteString.Char8 as B8
-import qualified Data.ByteString.Lazy.Char8 as LB8
-import Data.Char hiding (Space)
-import Data.Data
-import Data.Maybe
-import Data.Monoid
-import Data.String
-import Data.Text (pack, unpack)
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import qualified Data.Text.Lazy as LT
-import qualified Data.Text.Lazy.IO as LT
-import Data.Word
-import Language.Haskell.TH
-import Language.Haskell.TH.Quote
-import Numeric
-import Prelude hiding (lex)
-import Text.ParserCombinators.ReadP (readP_to_S)
-import Text.Read.Lex
+import           Control.Applicative
+import           Control.Monad.IO.Class
+import           Data.Attoparsec.Text         hiding (space)
+import qualified Data.ByteString              as B
+import qualified Data.ByteString.Char8        as B8
+import qualified Data.ByteString.Lazy         as LB
+import qualified Data.ByteString.Lazy.Char8   as LB8
+import           Data.Char                    hiding (Space)
+import           Data.Data
+import           Data.Maybe
+import           Data.Monoid
+import           Data.String
+import           Data.Text                    (pack, unpack)
+import qualified Data.Text                    as T
+import qualified Data.Text.IO                 as T
+import qualified Data.Text.Lazy               as LT
+import qualified Data.Text.Lazy.IO            as LT
+import           Data.Word
+import           Language.Haskell.TH
+import           Language.Haskell.TH.Quote
+import           Numeric
+import           Prelude                      hiding (lex)
+import           Text.ParserCombinators.ReadP (readP_to_S)
+import           Text.Read.Lex
 
 data Specifier = SignedDec | Octal | UnsignedHex | UnsignedHexUpper
                | FloatS | FloatUpper | Sci | SciUpper | ShorterFloat | ShorterFloatUpper
@@ -44,10 +44,10 @@ data Width = Width Integer | WidthStar deriving (Data, Show, Typeable, Eq)
 data Precision = Precision Integer | PrecisionStar deriving (Data, Show, Typeable, Eq)
 
 data Chunk = Chunk
-           { flags :: [Flag]
-           , width :: Maybe Width
+           { flags     :: [Flag]
+           , width     :: Maybe Width
            , precision :: Maybe Precision
-           , spec :: Specifier
+           , spec      :: Specifier
            } | Plain String
            deriving (Data, Show, Typeable)
 
@@ -124,10 +124,10 @@ specP = SignedDec <$ (char 'd' <|> char 'i')
     <|> Showable <$ char '?'
 
 data PrintfArg = PrintfArg
-               { paSpec :: Chunk
+               { paSpec   :: Chunk
                , widthArg :: Maybe Name
-               , precArg :: Maybe Name
-               , valArg :: Maybe Name
+               , precArg  :: Maybe Name
+               , valArg   :: Maybe Name
                } deriving Show
 
 collectArgs :: PrintfArg -> [PatQ]

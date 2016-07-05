@@ -1,20 +1,20 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE CPP         #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main where
 
-import Control.Exception
-import Control.Monad
-import qualified Data.Text as T
-import qualified Data.Text.Lazy as LT
-import qualified Data.ByteString.Char8 as B
+import           Control.Exception
+import           Control.Monad
+import qualified Data.ByteString.Char8      as B
 import qualified Data.ByteString.Lazy.Char8 as LB
-import Language.Haskell.TH.Quote
-import Test.Hspec
-import Test.HUnit
-import Test.QuickCheck
-import Text.Printf.TH
+import qualified Data.Text                  as T
+import qualified Data.Text.Lazy             as LT
+import           Language.Haskell.TH.Quote
+import           Test.Hspec
+import           Test.HUnit
+import           Test.QuickCheck
+import           Text.Printf.TH
 
 #if __GLASGOW_HASKELL__ <= 706
 instance Eq ErrorCall where
@@ -31,7 +31,7 @@ main = hspec $ do
             [s|\37\115|] "foo" @?= "foo"
 
         it "rejects unknown escape sequences" $
-            assertException (ErrorCall "Error when parsing format string") . evaluate $ quoteExp s "\\UNKNOWN"
+            assertException (\ x -> case x of ErrorCall _ -> True; _ -> False) . evaluate $ quoteExp s "\\UNKNOWN"
 
     describe "string substitution" $ do
         it "inserts strings of different types" $
@@ -59,9 +59,9 @@ str = do
     n <- elements [7..20]
     vectorOf n (elements ['A'..'z'])
 
-assertException :: (Exception e, Eq e) => e -> IO a -> IO ()
+assertException :: (Exception e, Eq e) => (e -> Bool) -> IO a -> IO ()
 assertException ex action =
     handleJust isWanted (const $ return ()) $ do
         a <- action
-        assertFailure $ a `seq` "Expected exception: " ++ show ex
-    where isWanted = guard . (==ex)
+        assertFailure $ a `seq` "Thrown exception did not match predicate"
+    where isWanted = guard . ex
