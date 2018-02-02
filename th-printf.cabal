@@ -1,34 +1,49 @@
-name:                th-printf
-version:             0.3.1
-synopsis:            Compile-time printf
-description:         Quasiquoters for printf: string, bytestring, text.
-homepage:            https://github.com/joelteon/th-printf
-license:             MIT
-license-file:        LICENSE
-author:              Joel Taylor
-maintainer:          me@joelt.io
-category:            Text
-build-type:          Simple
-cabal-version:       >=1.10
-
-library
-  hs-source-dirs:      src
-  exposed-modules:     Text.Printf.TH
-  build-depends:       base <4.10
-                     , attoparsec
-                     , bytestring
-                     , template-haskell
-                     , text
-                     , transformers
-  default-language:    Haskell2010
+name:          th-printf
+version:       0.4.0
+synopsis:      Compile-time printf
+description:   Quasiquoters for printf: string, bytestring, text.
+license:       MIT
+license-file:  LICENSE
+author:        Jude Taylor
+maintainer:    me@jude.xy
+category:      Text
+homepage:      https://github.com/pikajude/th-printf
+build-type:    Simple
+cabal-version: >=1.10
 
 source-repository head
-  type: git
-  location: git://github.com/joelteon/th-printf.git
+  type:     git
+  location: git://github.com/pikajude/th-printf.git
+
+library
+  exposed-modules:    Text.Printf.TH
+  other-modules:      NumericUtils
+                      Text.Printf.TH.Parser
+                      Text.Printf.TH.Printer
+                      Text.Printf.TH.Printer.String
+                      Text.Printf.TH.Types
+  hs-source-dirs:     src
+  default-language:   Haskell2010
+  default-extensions: NoMonomorphismRestriction
+  build-depends:      base, ansi-wl-pprint, attoparsec, charset, containers,
+                      template-haskell, text, transformers, trifecta, utf8-string
+  ghc-options:        -Wall -Werror -fno-warn-missing-signatures -fno-warn-name-shadowing
+                      -fno-warn-unused-do-bind -fprof-auto -fprof-cafs
 
 test-suite format
-  type: exitcode-stdio-1.0
-  main-is: format.hs
-  hs-source-dirs: tests
-  build-depends: base, bytestring, hspec, HUnit, QuickCheck, template-haskell, text, th-printf
-  default-language:    Haskell2010
+  type:             exitcode-stdio-1.0
+  main-is:          format.hs
+  other-modules:    Codegen
+  hs-source-dirs:   tests
+  default-language: Haskell2010
+  build-depends:    base, HUnit, QuickCheck, bytestring, hspec, template-haskell, text,
+                    th-printf
+  ghc-options:      -Wall -Werror -fno-warn-type-defaults
+
+benchmark perf
+  type:             exitcode-stdio-1.0
+  main-is:          benchmark.hs
+  hs-source-dirs:   benchmark
+  default-language: Haskell2010
+  build-depends:    base, criterion, text, th-printf
+  ghc-options:      -O2 -Wall -Werror -fno-warn-type-defaults
