@@ -27,7 +27,7 @@ library
   default-extensions: NoMonomorphismRestriction
   build-depends:      base, ansi-wl-pprint, attoparsec, charset, containers,
                       template-haskell, text, transformers, trifecta, utf8-string
-  ghc-options:        -Wall -Werror -fno-warn-missing-signatures -fno-warn-name-shadowing
+  ghc-options:        -Wall -fno-warn-missing-signatures -fno-warn-name-shadowing
                       -fno-warn-unused-do-bind -fprof-auto -fprof-cafs
 
 test-suite format
@@ -38,7 +38,7 @@ test-suite format
   default-language: Haskell2010
   build-depends:    base, HUnit, QuickCheck, bytestring, hspec, template-haskell, text,
                     th-printf
-  ghc-options:      -Wall -Werror -fno-warn-type-defaults
+  ghc-options:      -Wall -fno-warn-type-defaults
 
 benchmark perf
   type:             exitcode-stdio-1.0
@@ -46,4 +46,4 @@ benchmark perf
   hs-source-dirs:   benchmark
   default-language: Haskell2010
   build-depends:    base, criterion, text, th-printf
-  ghc-options:      -O2 -Wall -Werror -fno-warn-type-defaults
+  ghc-options:      -O2 -Wall -fno-warn-type-defaults

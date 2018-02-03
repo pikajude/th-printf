@@ -1,3 +1,4 @@
+{-# Language CPP #-}
 {-# Language DeriveDataTypeable #-}
 {-# Language FlexibleInstances #-}
 {-# Language QuasiQuotes #-}
@@ -7,12 +8,17 @@
 {-# Language TupleSections #-}
 
 module Text.Printf.TH
-    ( s
+    ( -- * Formatting strings
+      s
     , st
     , sb
+      -- * Printing strings
+    , hp
+    , p
     ) where
 
 import Control.Exception (Exception, throw)
+import Control.Monad.IO.Class
 import Data.ByteString.UTF8 (fromString)
 import Data.Maybe
 import Data.Proxy (Proxy(..))
@@ -35,11 +41,100 @@ data ParseError =
 
 instance Exception ParseError
 
+-- * Formatting strings
+-- | @
+-- ['s'|Hello, %s! (%d people greeted)|] :: ... -> String
+-- @
+--
+-- This formatter follows the guidelines listed
+-- <http://www.cplusplus.com/reference/cstdio/printf/ here>, with some
+-- caveats:
+--
+-- * Hexadecimal floating point isn't supported. I'm not convinced anyone
+-- actually uses this and there doesn't appear to be anything in @base@ to
+-- produce it.
+-- * @%p@ (pointer) and @%n@ (store number of printed characters) are not supported
+-- for obvious reasons.
+-- * @%.0e@ shows at least one decimal place despite this special case
+-- not appearing anywhere in the spec. This is a bug in 'Text.Printf.formatRealFloat'.
+-- As a result, @%e@ and @%#e@ have identical behavior.
+--
+-- @
+-- %c     :: 'Char'
+-- %s     :: 'String'
+--
+-- %u     :: 'GHC.Natural.Natural'
+--
+-- %d, %i :: 'Integral' i => i
+-- %o     :: 'Integral' i => i
+-- %x, %X :: 'Integral' i => i
+--
+-- %e, %E :: 'RealFloat' f => f
+-- %f, %F :: 'RealFloat' f => f
+-- %g, %G :: 'RealFloat' f => f
+-- @
+s :: QuasiQuoter
 s = quoter 'id
 
+-- | @
+-- ['st'|Hello, %s! (%d people greeted)|] :: ... -> 'Data.Text.Text'
+-- @
+st :: QuasiQuoter
 st = quoter 'pack
 
+-- | @
+-- ['sb'|Hello, %s! (%d people greeted)|] :: ... -> 'Data.ByteString.ByteString'
+-- @
+--
+-- The resulting string is UTF8-encoded.
+sb :: QuasiQuoter
 sb = quoter 'fromString
+
+-- | @
+-- ['hp'|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => 'Handle' -> ... -> m ()
+-- @
+--
+-- Prints the produced string to the provided 'Handle'. Like C printf, newline is not
+-- appended.
+hp :: QuasiQuoter
+hp =
+    QuasiQuoter
+        { quoteExp =
+              \s -> do
+                  LamE pats body <- parse 'id s
+                  arg <- newName "arg"
+                  ps <- [|liftIO . hPutStr $(varE arg)|]
+                  pure $ LamE ((VarP arg) : pats) $ AppE ps body
+        , quotePat = error "printf cannot be used in a pattern context"
+        , quoteType = error "printf cannot be used in a type context"
+        , quoteDec = error "printf cannot be used in a decl context"
+        }
+
+-- | @
+-- ['p'|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => ... -> m ()
+-- @
+--
+-- @
+-- [p|...|] arg1 arg2...
+-- @
+--
+-- is equivalent to
+--
+-- @
+-- [hp|...|] 'System.IO.stdout' arg1 arg2...
+-- @
+p :: QuasiQuoter
+p =
+    QuasiQuoter
+        { quoteExp =
+              \s -> do
+                  LamE pats body <- parse 'id s
+                  ps <- [|liftIO . putStr|]
+                  pure $ LamE pats $ AppE ps body
+        , quotePat = error "printf cannot be used in a pattern context"
+        , quoteType = error "printf cannot be used in a type context"
+        , quoteDec = error "printf cannot be used in a decl context"
+        }
 
 quoter f =
     QuasiQuoter
