@@ -8,20 +8,22 @@ module Codegen
 import Language.Haskell.TH.Lib
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax (Name)
-import Test.QuickCheck
-import Test.Hspec
 import Test.HUnit.Base
+import Test.Hspec
+import Test.QuickCheck
 
 str :: Gen String
 str = do
     n <- elements [7 .. 20]
-    vectorOf n (elements ['A' .. 'z'])
+    vectorOf n (elements $ ['A' .. 'Z'] ++ ['a' .. 'z'])
 
 gen :: String -> Name -> QuasiQuoter -> ExpQ
 gen name f quoter =
     [|describe $(stringE name) $ do
           describe "string" $ do
               it "basic" $ do
+                  $(q "\\1234") @?= "\1234"
+                  $(q "\12\&34") @?= "\12\&34"
                   $(q "%s") "foo" @?= "foo"
                   $(q "%10s") "foo" @?= "       foo"
                   $(q "%10s") "fübar" @?= $(varE f) "     fübar"
@@ -29,6 +31,9 @@ gen name f quoter =
                   $(q "%010s") "foo" @?= "0000000foo"
               it "precision" $ forAll str $ \n -> $(q "%.10s") n == $(q "%s") n
               it "prefix" $ forAll str $ \n -> $(q "%#s") n == $(q "%s") n
+              it "words with format" $ do
+                  $(q "This is a string: %10s. It's nice") "foobar" @?=
+                      "This is a string:     foobar. It's nice"
           describe "char" $ do
               it "basic" $ do
                   $(q "%c") 'U' @?= "U"

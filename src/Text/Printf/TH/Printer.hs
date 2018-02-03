@@ -9,16 +9,19 @@
 
 module Text.Printf.TH.Printer where
 
+import Control.Monad.Fix
 import Data.Monoid
 import Data.String
 import Numeric.Natural
+import Text.ParserCombinators.ReadP (readP_to_S)
 import Text.Printf.TH.Types
+import Text.Read.Lex
 
 class (IsString a, Monoid a) =>
       Printer a
     where
     type Output a
-    literal :: String -> a
+    string :: String -> a
     cons :: Char -> a -> a
     cons c = (formatChar' c <>)
     rjust :: Char -> Int -> a -> a
@@ -166,3 +169,11 @@ finalize p = foldMap (output p . fOne)
 formatStr spec = adjust spec $ valOf $ literal (value spec)
 
 formatChar spec = adjust spec $ valOf $ formatChar' (value spec)
+
+literal x
+    | '\\' `elem` x =
+        (`fix` x) $ \f s ->
+            case readP_to_S lexChar s of
+                ((c, rest):_) -> cons c (f rest)
+                [] -> mempty
+    | otherwise = string x

@@ -14,7 +14,7 @@ import Text.Printf.TH.Printer
 
 instance Printer String where
     type Output String = String
-    literal = id
+    string = id
     formatChar' = pure
     cons = (:)
     output _ = id
