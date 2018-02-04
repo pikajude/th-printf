@@ -25,7 +25,7 @@ library
   hs-source-dirs:     src
   default-language:   Haskell2010
   default-extensions: NoMonomorphismRestriction
-  build-depends:      base, ansi-wl-pprint, attoparsec, charset, containers,
+  build-depends:      base >= 4.8, ansi-wl-pprint, attoparsec, charset, containers,
                       template-haskell, text, transformers, trifecta, utf8-string
   ghc-options:        -Wall -fno-warn-missing-signatures -fno-warn-name-shadowing
                       -fno-warn-unused-do-bind -fprof-auto -fprof-cafs
