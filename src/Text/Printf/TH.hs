@@ -63,6 +63,8 @@ instance Exception ParseError
 -- %c     :: 'Char'
 -- %s     :: 'String'
 --
+-- %?     :: 'Show' a => a
+--
 -- %u     :: 'GHC.Natural.Natural'
 --
 -- %d, %i :: 'Integral' i => i
@@ -197,4 +199,5 @@ mkExpr (Arg (FormatArg flags width precision spec)) = do
             'g' -> [|formatG|]
             'G' -> [|formatGUpper|]
             'c' -> [|formatChar|]
+            '?' -> [|formatShowable|]
             _ -> error "???"

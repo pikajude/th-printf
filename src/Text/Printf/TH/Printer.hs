@@ -177,3 +177,5 @@ literal x
                 ((c, rest):_) -> cons c (f rest)
                 [] -> mempty
     | otherwise = string x
+
+formatShowable spec = adjust spec $ valOf $ literal (show $ value spec)
