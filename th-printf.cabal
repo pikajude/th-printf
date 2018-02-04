@@ -28,7 +28,7 @@ library
   build-depends:      base >= 4.8, ansi-wl-pprint, attoparsec, charset, containers,
                       template-haskell, text, transformers, trifecta, utf8-string
   ghc-options:        -Wall -fno-warn-missing-signatures -fno-warn-name-shadowing
-                      -fno-warn-unused-do-bind -fprof-auto -fprof-cafs
+                      -fno-warn-unused-do-bind
 
 test-suite format
   type:             exitcode-stdio-1.0
