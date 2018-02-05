@@ -5,7 +5,7 @@ description:   Quasiquoters for printf: string, bytestring, text.
 license:       MIT
 license-file:  LICENSE
 author:        Jude Taylor
-maintainer:    me@jude.xy
+maintainer:    me@jude.xyz
 category:      Text
 homepage:      https://github.com/pikajude/th-printf
 build-type:    Simple
