@@ -7,6 +7,8 @@ module NumericUtils
     ) where
 
 import Data.Char
+import Data.Foldable
+import Data.Ord
 import GHC.Base
 import GHC.Float (FFFormat(..), roundTo)
 import Numeric (floatToDigits)
@@ -37,8 +39,8 @@ formatRealFloatAlt fmt decs alt upper x
         if x < 0
             then "-Infinity"
             else "Infinity"
-    | x < 0 || isNegativeZero x = '-' : doFmt fmt (floatToDigits (toInteger base) (-x))
-    | otherwise = doFmt fmt (floatToDigits (toInteger base) x)
+    | x < 0 || isNegativeZero x = '-' : doFmt fmt (floatToDigits base (-x))
+    | otherwise = doFmt fmt (floatToDigits base x)
   where
     eChar
         | upper = 'E'
@@ -48,11 +50,9 @@ formatRealFloatAlt fmt decs alt upper x
         let ds = map intToDigit is
          in case format of
                 FFGeneric ->
-                    let alt1 = doFmt FFExponent (is, e)
-                        alt2 = doFmt FFFixed (is, e)
-                     in if length alt2 > length alt1
-                            then alt1
-                            else alt2
+                    minimumBy
+                        (comparing length)
+                        [doFmt FFExponent (is, e), doFmt FFFixed (is, e)]
                 FFExponent ->
                     case decs of
                         Nothing ->
@@ -139,7 +139,7 @@ formatFloatHex decs alt upper x = doFmt (floatToDigits 2 x)
                               else b)
             Nothing -> \x -> ('1', x)
     doFmt ([0], 0) = "0" ++ [pChar] ++ "+0"
-    doFmt ((1:bits), exp) =
+    doFmt ((_:bits), exp) =
         first :
         (if null digs && not alt
              then ""
