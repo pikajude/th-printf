@@ -47,17 +47,9 @@ instance Exception ParseError
 -- @
 --
 -- This formatter follows the guidelines listed
--- <http://www.cplusplus.com/reference/cstdio/printf/ here>, with some
--- caveats:
---
--- * Hexadecimal floating point isn't supported. I'm not convinced anyone
--- actually uses this and there doesn't appear to be anything in @base@ to
--- produce it.
--- * @%p@ (pointer) and @%n@ (store number of printed characters) are not supported
--- for obvious reasons.
--- * @%.0e@ shows at least one decimal place despite this special case
--- not appearing anywhere in the spec. This is a bug in 'Text.Printf.formatRealFloat'.
--- As a result, @%e@ and @%#e@ have identical behavior.
+-- <http://www.cplusplus.com/reference/cstdio/printf/ here>, except for
+-- @%n@ (store number of printed characters) for obvious
+-- reasons.
 --
 -- @
 -- %c     :: 'Char'
@@ -71,9 +63,12 @@ instance Exception ParseError
 -- %o     :: 'Integral' i => i
 -- %x, %X :: 'Integral' i => i
 --
+-- %a, %A :: 'RealFloat' f => f
 -- %e, %E :: 'RealFloat' f => f
 -- %f, %F :: 'RealFloat' f => f
 -- %g, %G :: 'RealFloat' f => f
+--
+-- %p     :: 'Foreign.Ptr.Ptr' a
 -- @
 s :: QuasiQuoter
 s = quoter 'id
@@ -194,10 +189,13 @@ mkExpr (Arg (FormatArg flags width precision spec)) = do
             's' -> [|formatStr|]
             'f' -> [|formatFloat|]
             'F' -> [|formatFloat|]
+            'a' -> [|formatHexFloat|]
+            'A' -> [|formatHexFloatUpper|]
             'e' -> [|formatSci|]
             'E' -> [|formatSciUpper|]
             'g' -> [|formatG|]
             'G' -> [|formatGUpper|]
+            'p' -> [|formatPtr|]
             'c' -> [|formatChar|]
             '?' -> [|formatShowable|]
             _ -> error "???"

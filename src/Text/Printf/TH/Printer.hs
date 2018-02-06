@@ -12,9 +12,11 @@ module Text.Printf.TH.Printer where
 import Control.Monad.Fix
 import Data.Monoid
 import Data.String
+import Foreign.Ptr
+import Foreign.Storable
 import Numeric.Natural
 import Text.ParserCombinators.ReadP (readP_to_S)
-import Text.Printf.TH.Types
+import Text.Printf.TH.Types hiding (width)
 import Text.Read.Lex
 
 class (IsString a, Monoid a) =>
@@ -33,8 +35,10 @@ class (IsString a, Monoid a) =>
     formatHex' :: Integral i => i -> a
     formatHexUpper' :: Integral i => i -> a
     formatFloat' :: RealFloat f => Maybe Int -> (f -> a, f -> a)
-    formatSci' :: RealFloat f => Maybe Int -> f -> a
-    formatSciUpper' :: RealFloat f => Maybe Int -> f -> a
+    formatHexFloat' :: RealFloat f => Maybe Int -> (f -> a, f -> a)
+    formatHexFloatUpper' :: RealFloat f => Maybe Int -> (f -> a, f -> a)
+    formatSci' :: RealFloat f => Maybe Int -> (f -> a, f -> a)
+    formatSciUpper' :: RealFloat f => Maybe Int -> (f -> a, f -> a)
     formatG' :: RealFloat f => Maybe Int -> (f -> a, f -> a)
     formatGUpper' :: RealFloat f => Maybe Int -> (f -> a, f -> a)
 
@@ -44,6 +48,17 @@ data ArgSpec v = ArgSpec
     , prec :: Maybe Int
     , value :: v
     }
+
+forcePrefix a@ArgSpec {flagSet} = a {flagSet = flagSet {prefixed = True}}
+
+forceSize n a@ArgSpec {flagSet} =
+    a {width = Just n, flagSet = flagSet {adjustment = Just ZeroPadded}}
+
+forceNoZero a@ArgSpec {flagSet} =
+    a {flagSet = flagSet {adjustment = noZero (adjustment flagSet)}}
+  where
+    noZero (Just ZeroPadded) = Nothing
+    noZero x = x
 
 data Direction
     = Leftward
@@ -132,17 +147,37 @@ formatOct = helper formatOct' "0"
 
 formatHex = helper formatHex' "0x"
 
+formatPtr =
+    helper formatHex' "0x" .
+    fmap (`minusPtr` nullPtr) . forcePrefix . forceSize (sizeOf nullPtr * 2)
+
 formatHexUpper = helper formatHexUpper' "0X"
 
-helper' spec pair
-    | prefixed (flagSet spec) = helper (snd pair) "" spec
-    | otherwise = helper (fst pair) "" spec
+helper' spec pair = helper'' spec pair ""
+
+helper'' spec pair pref
+    | prefixed (flagSet spec) = helper (snd pair) pref spec
+    | otherwise = helper (fst pair) pref spec
 
 formatFloat spec = helper' spec (formatFloat' (prec spec))
 
-formatSci spec = helper (formatSci' (prec spec)) "" spec
+formatSci spec = helper' spec (formatSci' (prec spec))
 
-formatSciUpper spec = helper (formatSciUpper' (prec spec)) "" spec
+formatSciUpper spec = helper' spec (formatSciUpper' (prec spec))
+
+formatHexFloat spec
+    | isNaN x = helper (const "NaN") "" $ forceNoZero spec
+    | isInfinite x = helper (const "Infinity") "" $ forceNoZero spec
+    | otherwise = helper'' (forcePrefix spec) (formatHexFloat' (prec spec)) "0x"
+  where
+    x = value spec
+
+formatHexFloatUpper spec
+    | isNaN x = helper (const "NaN") "" $ forceNoZero spec
+    | isInfinite x = helper (const "Infinity") "" $ forceNoZero spec
+    | otherwise = helper'' (forcePrefix spec) (formatHexFloatUpper' (prec spec)) "0X"
+  where
+    x = value spec
 
 formatG spec = helper' spec (formatG' (prec spec))
 

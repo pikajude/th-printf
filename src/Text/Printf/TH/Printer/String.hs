@@ -7,8 +7,6 @@
 
 module Text.Printf.TH.Printer.String where
 
-import Data.Char (toUpper)
-import Numeric hiding (showIntAtBase)
 import NumericUtils
 import Text.Printf.TH.Printer
 
@@ -33,13 +31,23 @@ instance Printer String where
     formatHex' = showIntAtBase 16 intToDigit
     formatHexUpper' = showIntAtBase 16 intToDigitUpper
     formatFloat' p =
-        ( \n -> showFFloat (fromIntegral <$> p) n ""
-        , \n -> showFFloatAlt (fromIntegral <$> p) n "")
-    formatSci' p n = showEFloat (fromIntegral <$> p) n ""
-    formatSciUpper' p = map toUpper . formatSci' p
+        ( formatRealFloatAlt FFFixed (fromIntegral <$> p) False False
+        , formatRealFloatAlt FFFixed (fromIntegral <$> p) True False)
+    formatHexFloat' p =
+        ( formatFloatHex (fromIntegral <$> p) False False
+        , formatFloatHex (fromIntegral <$> p) True False)
+    formatHexFloatUpper' p =
+        ( formatFloatHex (fromIntegral <$> p) False True
+        , formatFloatHex (fromIntegral <$> p) True True)
+    formatSci' p =
+        ( formatRealFloatAlt FFExponent (fromIntegral <$> p) False False
+        , formatRealFloatAlt FFExponent (fromIntegral <$> p) True False)
+    formatSciUpper' p =
+        ( formatRealFloatAlt FFExponent (fromIntegral <$> p) False True
+        , formatRealFloatAlt FFExponent (fromIntegral <$> p) True True)
     formatG' p =
-        ( \n -> showGFloat (fromIntegral <$> p) n ""
-        , \n -> showGFloatAlt (fromIntegral <$> p) n "")
-    formatGUpper' p = both (map toUpper .) (formatG' p)
-      where
-        both f (x, y) = (f x, f y)
+        ( formatRealFloatAlt FFGeneric (fromIntegral <$> p) False False
+        , formatRealFloatAlt FFGeneric (fromIntegral <$> p) True False)
+    formatGUpper' p =
+        ( formatRealFloatAlt FFGeneric (fromIntegral <$> p) False True
+        , formatRealFloatAlt FFGeneric (fromIntegral <$> p) True True)
