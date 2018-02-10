@@ -57,7 +57,7 @@ instance Exception ParseError
 --
 -- %?     :: 'Show' a => a
 --
--- %u     :: 'GHC.Natural.Natural'
+-- %u     :: 'Numeric.Natural.Natural'
 --
 -- %d, %i :: 'Integral' i => i
 -- %o     :: 'Integral' i => i
