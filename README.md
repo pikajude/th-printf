@@ -1,5 +1,5 @@
-th-printf
-=========
+# th-printf [![Hackage](https://img.shields.io/hackage/v/th-printf.svg?style=flat)](https://hackage.haskell.org/package/th-printf)
+
 printf QuasiQuoters
 
 Usage
