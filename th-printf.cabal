@@ -23,7 +23,7 @@ library
                       Text.Printf.TH.Printer.String
                       Text.Printf.TH.Types
   hs-source-dirs:     src
-  build-depends:      base             >= 4.8
+  build-depends:      base             >= 4.8 && < 5
                     , ansi-wl-pprint
                     , attoparsec
                     , charset
