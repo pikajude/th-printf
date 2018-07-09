@@ -1,5 +1,5 @@
 name:          th-printf
-version:       0.5.1
+version:       0.6.0
 synopsis:      Compile-time printf
 description:   Quasiquoters for printf: string, bytestring, text.
 license:       MIT

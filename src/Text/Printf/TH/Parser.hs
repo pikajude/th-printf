@@ -11,7 +11,7 @@ import Text.Printf.TH.Types
 
 flagSet = fromList "-+ #0"
 
-specSet = fromList "diuoxXfFeEaAgGpcs?"
+specSet = fromList "diuoxXfFeEaAgGpcst?"
 
 parseFmtStr = do
     atoms <-

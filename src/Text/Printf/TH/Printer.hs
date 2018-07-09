@@ -1,17 +1,18 @@
-{-# Language RecordWildCards #-}
-{-# Language DefaultSignatures #-}
-{-# Language OverloadedStrings #-}
-{-# Language NamedFieldPuns #-}
-{-# Language FlexibleContexts #-}
-{-# Language FlexibleInstances #-}
-{-# Language TypeSynonymInstances #-}
-{-# Language TypeFamilies #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Text.Printf.TH.Printer where
 
 import Control.Monad.Fix
 import Data.Monoid
 import Data.String
+import Data.Text (unpack)
 import Foreign.Ptr
 import Foreign.Storable
 import Numeric.Natural
@@ -202,6 +203,8 @@ fOne v@(Val {valWidth = Just n, valDirection = Leftward, ..}) =
 finalize p = foldMap (output p . fOne)
 
 formatStr spec = adjust spec $ valOf $ literal (value spec)
+
+formatText spec = adjust spec $ valOf $ literal (unpack $ value spec)
 
 formatChar spec = adjust spec $ valOf $ formatChar' (value spec)
 

@@ -1,11 +1,11 @@
-{-# Language CPP #-}
-{-# Language DeriveDataTypeable #-}
-{-# Language FlexibleInstances #-}
-{-# Language QuasiQuotes #-}
-{-# Language RecordWildCards #-}
-{-# Language ScopedTypeVariables #-}
-{-# Language TemplateHaskell #-}
-{-# Language TupleSections #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 
 module Text.Printf.TH
     ( -- * Formatting strings
@@ -54,6 +54,7 @@ instance Exception ParseError
 -- @
 -- %c     :: 'Char'
 -- %s     :: 'String'
+-- %t     :: 'Data.Text.Text'
 --
 -- %?     :: 'Show' a => a
 --
@@ -187,6 +188,7 @@ mkExpr (Arg (FormatArg flags width precision spec)) = do
             'x' -> [|formatHex|]
             'X' -> [|formatHexUpper|]
             's' -> [|formatStr|]
+            't' -> [|formatText|]
             'f' -> [|formatFloat|]
             'F' -> [|formatFloat|]
             'a' -> [|formatHexFloat|]

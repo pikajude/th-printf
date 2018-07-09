@@ -34,6 +34,13 @@ gen name f quoter =
               it "words with format" $ do
                   $(q "This is a string: %10s. It's nice") "foobar" @?=
                       "This is a string:     foobar. It's nice"
+          describe "text" $ do
+              it "like string" $ do
+                  $(q "%t") "foo" @?= "foo"
+                  $(q "%10t") "foo" @?= "       foo"
+                  $(q "%10t") "fübar" @?= $(varE f) "     fübar"
+                  $(q "%-10t") "foo" @?= "foo       "
+                  $(q "%010t") "foo" @?= "0000000foo"
           describe "char" $ do
               it "basic" $ do
                   $(q "%c") 'U' @?= "U"
