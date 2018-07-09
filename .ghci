@@ -1,1 +1,1 @@
-:set -XQuasiQuotes -Wno-type-defaults
+:set -XQuasiQuotes -Wno-type-defaults -ddump-splices
