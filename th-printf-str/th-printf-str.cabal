@@ -4,6 +4,7 @@ license:            BSD3
 license-file:       LICENSE
 author:             Jude Taylor
 maintainer:         me@jude.xyz
+tested-with:        GHC == 8.4.3, GHC == 8.2.2
 category:           Text
 build-type:         Simple
 extra-source-files: ChangeLog.md

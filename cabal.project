@@ -1,0 +1,3 @@
+packages: th-printf-indef
+          th-printf-text
+          th-printf-str
