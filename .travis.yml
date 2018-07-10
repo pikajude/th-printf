@@ -56,6 +56,19 @@ install:
   - travis_retry cabal update -v
   - "sed -i.bak 's/^jobs:/-- jobs:/' ${HOME}/.cabal/config"
   - rm -fv cabal.project cabal.project.local
+  # Overlay next-hackage for sig packages
+  - |
+    sed -i.bak 's/-- allow-newer:.*/allow-newer: *:base, *:template-haskell, *:ghc, *:Cabal/' ${HOME}/.cabal/config
+
+    echo 'repository next-hackage'                                                        >> ${HOME}/.cabal/config
+    echo '   url: http://next.hackage.haskell.org:8080/'                                  >> ${HOME}/.cabal/config
+    echo '   secure: True'                                                                >> ${HOME}/.cabal/config
+    echo '   root-keys: 015ccb40c3cd254a7de458b048ba672c47e59195b3c8969cd85b686de2d49e2b' >> ${HOME}/.cabal/config
+    echo '              0553aa6ab1e93a7c37d1d91670721b3b1ea8e976289c9709ebaaa9773df4538e' >> ${HOME}/.cabal/config
+    echo '              f9cfba99add8cb35e94d16c1819903373ad45e9702557f0b4ec2cf10f2738216' >> ${HOME}/.cabal/config
+    echo '   key-threshold: 2'                                                            >> ${HOME}/.cabal.config
+
+    cabal new-update next-hackage -v
   - grep -Ev -- '^\s*--' ${HOME}/.cabal/config | grep -Ev '^\s*$'
   - "printf 'packages: \"th-printf-indef\" \"th-printf-text\" \"th-printf-str\"\\n' > cabal.project"
   - cat cabal.project
