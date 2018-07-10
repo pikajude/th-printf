@@ -1,7 +1,0 @@
-signature Printable where
-
-data Str
-instance Eq Str
-
-cons :: Char -> Str -> Str
-null :: Str

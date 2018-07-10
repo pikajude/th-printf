@@ -1,0 +1,34 @@
+signature Str
+    ( Str
+    , Chr
+    , Index
+    , Output
+    , head
+    , justifyLeft
+    , justifyRight
+    , length
+    , empty
+    , chr
+    , finalize
+    , fromOutput
+
+    , showDecimal
+    , showHex
+    ) where
+
+import Prelude (Char, Integral, Show, Bool)
+
+data Chr
+
+data Str
+
+data Index
+
+chr :: Char -> Chr
+data Output
+
+fromOutput :: Output -> Str
+finalize :: Str -> Output
+
+showDecimal :: (Integral a, Show a) => a -> Str
+showHex :: (Integral a, Show a) => Bool -> a -> Str

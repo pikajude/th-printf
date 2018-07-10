@@ -1,0 +1,36 @@
+name:          th-printf-indef
+version:       0.5.1
+synopsis:      Indefinite package for th-printf
+description:
+  Quasiquoters for printf: string, bytestring, text.
+  .
+  This package is indefinite. See @th-printf-text@ or @th-printf-str@ for implementations.
+license:       MIT
+license-file:  LICENSE
+author:        Jude Taylor
+maintainer:    me@jude.xyz
+category:      Text
+homepage:      https://github.com/pikajude/th-printf
+build-type:    Simple
+cabal-version: 2.0
+
+source-repository head
+  type:     git
+  location: git://github.com/pikajude/th-printf.git
+
+library
+  exposed-modules:  TH.Printf
+  signatures:       Str
+  other-modules:    TH.Printf.Geometry
+                    TH.Printf.Printers
+                    TH.PrintfArg
+  hs-source-dirs:   src
+  build-depends:    base == 4.*, parser, str-sig, template-haskell
+  default-language: Haskell2010
+
+library parser
+  exposed-modules:  Parser
+                    Parser.Types
+  hs-source-dirs:   parser
+  build-depends:    base, charset, containers, parsec, template-haskell
+  default-language: Haskell2010

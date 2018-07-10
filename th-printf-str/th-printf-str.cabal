@@ -1,0 +1,23 @@
+name:               th-printf-str
+version:            0.1.0.0
+license:            BSD3
+license-file:       LICENSE
+author:             Jude Taylor
+maintainer:         me@jude.xyz
+category:           Text
+build-type:         Simple
+extra-source-files: ChangeLog.md
+cabal-version:      2.0
+
+library
+  reexported-modules: TH.Printf.String
+  mixins:             th-printf-indef (TH.Printf as TH.Printf.String)
+                             requires (Str as StrJustified)
+  build-depends:      base == 4.*, str-justified, th-printf-indef
+  default-language:   Haskell2010
+
+library str-justified
+  exposed-modules:  StrJustified
+  hs-source-dirs:   src
+  build-depends:    base, str-string
+  default-language: Haskell2010
