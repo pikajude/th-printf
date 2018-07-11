@@ -13,7 +13,6 @@ signature Str
     , fromOutput
 
     , showDecimal
-    , showHex
     ) where
 
 import Prelude (Char, Integral, Show, Bool)
@@ -31,4 +30,3 @@ fromOutput :: Output -> Str
 finalize :: Str -> Output
 
 showDecimal :: (Integral a, Show a) => a -> Str
-showHex :: (Integral a, Show a) => Bool -> a -> Str

@@ -25,9 +25,6 @@ instance Data Str
 showDecimal :: (Integral a, Show a) => a -> Str
 showDecimal = decimal
 
-showHex :: (Integral a, Show a) => Bool -> a -> Str
-showHex _ = hexadecimal
-
 length = T.length . B.toLazyText
 
 head = T.head . B.toLazyText

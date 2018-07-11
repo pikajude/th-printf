@@ -12,8 +12,6 @@ printfString spec = adjust spec $ valOf $ S.fromOutput (value spec)
 
 printfDecimal spec = adjustAndSign S.empty spec $ valOf $ S.showDecimal (abs $ value spec)
 
-printfHex b spec = adjustAndSign "0x" spec $ valOf $ S.showHex b (abs $ value spec)
-
 adjustAndSign :: (Num n, Eq n) => S.Str -> PrintfArg n -> Val S.Str -> Val S.Str
 adjustAndSign pref (PrintfArg flags width _ num) =
     adj . setWidth' width . sign flags num . prefix pref flags num
