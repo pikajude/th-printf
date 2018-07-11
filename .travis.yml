@@ -82,8 +82,8 @@ install:
       (cd "th-printf-str" && autoreconf -i);
     fi
   - rm -f cabal.project.freeze
-  - cabal new-build -w ${HC} ${TEST} ${BENCH} --project-file="cabal.project" --dep -j2 all
-  - cabal new-build -w ${HC} --disable-tests --disable-benchmarks --project-file="cabal.project" --dep -j2 all
+  - cabal new-build -w ${HC} ${TEST} ${BENCH} --project-file="cabal.project" -j2 all
+  - cabal new-build -w ${HC} --disable-tests --disable-benchmarks --project-file="cabal.project" -j2 all
   - rm -rf .ghc.environment.* "th-printf-indef"/dist "th-printf-text"/dist "th-printf-str"/dist
   - DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
 
