@@ -30,6 +30,8 @@ showDecimal = show
 
 type Output = String
 
+fromOutput :: Output -> Str
 fromOutput = id
 
+finalize :: Str -> Output
 finalize = id
