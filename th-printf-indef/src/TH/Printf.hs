@@ -66,4 +66,3 @@ extractExpr (Arg (FormatArg flags width precision spec)) = do
             's' -> [|Printers.printfString|]
             'd' -> [|Printers.printfDecimal|]
             'i' -> [|Printers.printfDecimal|]
-            'x' -> [|Printers.printfHex|]
