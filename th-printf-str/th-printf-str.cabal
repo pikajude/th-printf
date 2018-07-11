@@ -1,5 +1,7 @@
 name:               th-printf-str
 version:            0.1.0.0
+synopsis:           Template Haskell printf
+description:        Quasiquoters for printf, producing @String@
 license:            BSD3
 license-file:       LICENSE
 author:             Jude Taylor

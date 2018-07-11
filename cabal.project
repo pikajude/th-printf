@@ -1,3 +1,5 @@
 packages: th-printf-indef
-          th-printf-text
           th-printf-str
+          th-printf-text
+
+allow-newer: str-sig:base, str-string:base, str-text:base

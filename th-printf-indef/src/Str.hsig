@@ -2,15 +2,12 @@ signature Str
     ( Str
     , Chr
     , Index
-    , Output
     , head
     , justifyLeft
     , justifyRight
     , length
     , empty
     , chr
-    , finalize
-    , fromOutput
 
     , showDecimal
     ) where
@@ -24,9 +21,5 @@ data Str
 data Index
 
 chr :: Char -> Chr
-data Output
-
-fromOutput :: Output -> Str
-finalize :: Str -> Output
 
 showDecimal :: (Integral a, Show a) => a -> Str

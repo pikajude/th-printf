@@ -8,7 +8,7 @@ import qualified Str as S
 import TH.Printf.Geometry
 import TH.PrintfArg
 
-printfString spec = adjust spec $ valOf $ S.fromOutput (value spec)
+printfString spec = adjust spec $ valOf (value spec)
 
 printfDecimal spec = adjustAndSign S.empty spec $ valOf $ S.showDecimal (abs $ value spec)
 

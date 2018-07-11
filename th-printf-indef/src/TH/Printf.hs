@@ -30,7 +30,7 @@ s =
                       Right y -> do
                           (lhss, rhss) <- unzip <$> mapM extractExpr y
                           let rhss' = foldr1 (\x y -> infixApp x [|(<>)|] y) rhss
-                          lamE (map varP $ concat lhss) [|S.finalize $(rhss')|]
+                          lamE (map varP $ concat lhss) rhss'
         , quotePat = error "this quoter cannot be used in a pattern context"
         , quoteType = error "this quoter cannot be used in a type context"
         , quoteDec = error "this quoter cannot be used in a declaration context"

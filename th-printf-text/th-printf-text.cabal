@@ -1,5 +1,7 @@
 name:               th-printf-text
 version:            0.1.0.0
+synopsis:           Template Haskell printf
+description:        Quasiquoters for printf, producing @Text@
 license:            BSD3
 license-file:       LICENSE
 author:             Jude Taylor
@@ -11,14 +13,17 @@ extra-source-files: ChangeLog.md
 cabal-version:      2.0
 
 library
-  reexported-modules: TH.Printf.Text
-  mixins:             th-printf-indef (TH.Printf as TH.Printf.Text)
-                             requires (Str as TextJustified)
-  build-depends:      base == 4.*, text-justified, th-printf-indef
+  reexported-modules: TH.Printf.Text, TH.Printf.Text.Lazy
+  mixins:             th-printf-indef (TH.Printf as TH.Printf.Text.Lazy)
+                             requires (Str as Text.Lazy)
+                    , th-printf-indef (TH.Printf as TH.Printf.Text)
+                             requires (Str as Text.Strict)
+  build-depends:      base == 4.*, text-impl, th-printf-indef
   default-language:   Haskell2010
 
-library text-justified
-  exposed-modules:  TextJustified
+library text-impl
+  exposed-modules:  Text.Lazy
+                    Text.Strict
   hs-source-dirs:   src
   build-depends:    base, str-text, text
   default-language: Haskell2010
