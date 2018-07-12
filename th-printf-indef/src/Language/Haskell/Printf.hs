@@ -4,7 +4,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module TH.Printf
+module Language.Haskell.Printf
     ( s
     ) where
 
@@ -16,10 +16,11 @@ import Language.Haskell.TH.Syntax
 import Parser (parseStr)
 import Parser.Types hiding (width)
 import qualified Str as S
-import TH.Printf.Geometry (formatOne)
-import qualified TH.Printf.Printers as Printers
-import TH.PrintfArg
+import Language.Haskell.Printf.Geometry (formatOne)
+import qualified Language.Haskell.Printf.Printers as Printers
+import Language.Haskell.PrintfArg
 
+-- | Printf a string
 s :: QuasiQuoter
 s =
     QuasiQuoter

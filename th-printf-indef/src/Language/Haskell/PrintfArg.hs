@@ -1,4 +1,4 @@
-module TH.PrintfArg where
+module Language.Haskell.PrintfArg where
 
 import Parser.Types
 import Str (Index)

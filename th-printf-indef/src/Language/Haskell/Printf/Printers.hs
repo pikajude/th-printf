@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module TH.Printf.Printers where
+module Language.Haskell.Printf.Printers where
 
 import Data.String (fromString)
 import Parser.Types
 import qualified Str as S
-import TH.Printf.Geometry
-import TH.PrintfArg
+import Language.Haskell.Printf.Geometry
+import Language.Haskell.PrintfArg
 
 printfString spec = adjust spec $ valOf (value spec)
 

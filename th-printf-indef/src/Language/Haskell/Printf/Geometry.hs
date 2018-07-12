@@ -1,11 +1,11 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module TH.Printf.Geometry where
+module Language.Haskell.Printf.Geometry where
 
 import Data.String (IsString(..))
 import Parser.Types
 import qualified Str as S
-import TH.PrintfArg
+import Language.Haskell.PrintfArg
 
 data Direction
     = Leftward
