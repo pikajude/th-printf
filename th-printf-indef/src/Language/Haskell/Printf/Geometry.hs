@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Language.Haskell.Printf.Geometry where
 
@@ -75,3 +76,25 @@ formatOne v@(Val {valWidth = Just n, valDirection = Rightward, ..}) =
     extra = maybe 0 fst valPrefix + maybe 0 fst valSign
 formatOne v@(Val {valWidth = Just n, valDirection = Leftward, ..}) =
     S.justifyLeft n (S.chr ' ') $ formatOne (v {valWidth = Nothing})
+
+adjustAndSign :: (Num n, Eq n) => S.Str -> PrintfArg n -> Val S.Str -> Val S.Str
+adjustAndSign pref (PrintfArg flags width _ num) =
+    adj . setWidth' width . sign flags num . prefix pref flags num
+  where
+    adj =
+        case adjustment flags of
+            Nothing -> id
+            Just LeftJustified -> setLeftAligned
+            Just ZeroPadded -> setZero
+
+sign flags n
+    -- -1 as a "Natural" literal causes a runtime error
+    | signum n `notElem` [0, 1] = setSign (1, "-")
+    | spaced flags = setSign (1, " ")
+    | signed flags = setSign (1, "+")
+    | otherwise = id
+
+prefix _ _ 0 = id
+prefix s flags _
+    | prefixed flags = setPrefix (S.length s, s)
+    | otherwise = id
