@@ -9,7 +9,7 @@ license:       MIT
 license-file:  LICENSE
 author:        Jude Taylor
 maintainer:    me@jude.xyz
-tested-with:   GHC == 8.4.3, GHC == 8.2.2
+tested-with:   GHC == 8.4.3
 category:      Text
 homepage:      https://github.com/pikajude/th-printf
 build-type:    Simple
