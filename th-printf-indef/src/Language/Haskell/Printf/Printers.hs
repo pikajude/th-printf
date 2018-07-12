@@ -10,7 +10,7 @@ import Numeric.Natural
 import Parser.Types
 import qualified Str as S
 
-type Printer n = PrintfArg n -> Val S.Str
+type Printer n = PrintfArg n -> Val
 
 printfString :: Printer S.Str
 printfString spec = adjust spec $ valOf $ value spec
