@@ -10,15 +10,15 @@ module Language.Haskell.Printf
 
 import Data.Maybe
 import Data.String (fromString)
+import Language.Haskell.Printf.Geometry (formatOne)
+import qualified Language.Haskell.Printf.Printers as Printers
+import Language.Haskell.PrintfArg
 import Language.Haskell.TH.Lib
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Parser (parseStr)
 import Parser.Types hiding (width)
 import qualified Str as S
-import Language.Haskell.Printf.Geometry (formatOne)
-import qualified Language.Haskell.Printf.Printers as Printers
-import Language.Haskell.PrintfArg
 
 -- | Printf a string
 s :: QuasiQuoter
@@ -26,7 +26,7 @@ s =
     QuasiQuoter
         { quoteExp =
               \s ->
-                  case parseStr "" s of
+                  case parseStr s of
                       Left x -> error $ show x
                       Right y -> do
                           (lhss, rhss) <- unzip <$> mapM extractExpr y
@@ -67,3 +67,8 @@ extractExpr (Arg (FormatArg flags width precision spec)) = do
             's' -> [|Printers.printfString|]
             'd' -> [|Printers.printfDecimal|]
             'i' -> [|Printers.printfDecimal|]
+            'c' -> [|Printers.printfChar|]
+            'u' -> [|Printers.printfNatural|]
+            n -> errorInternal $ "Unhandled format specifier `" ++ [n] ++ "`"
+
+errorInternal s = error $ "th-printf internal error: " ++ s

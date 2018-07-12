@@ -35,3 +35,23 @@ library parser
   hs-source-dirs:   parser
   build-depends:    base, charset, containers, parsec, template-haskell
   default-language: Haskell2010
+
+library format-impl
+  exposed-modules:  Impl.Str
+  hs-source-dirs:   tests
+  build-depends:    base
+  default-language: Haskell2010
+
+test-suite format
+  type:             exitcode-stdio-1.0
+  main-is:          format.hs
+  mixins:           th-printf-indef  requires (Str as Impl.Str)
+  hs-source-dirs:   tests
+  build-depends:    base
+                  , HUnit
+                  , QuickCheck
+                  , format-impl
+                  , hspec
+                  , template-haskell
+                  , th-printf-indef
+  default-language: Haskell2010

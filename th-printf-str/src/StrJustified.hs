@@ -8,6 +8,10 @@ import Numeric (showIntAtBase)
 import Prelude hiding (replicate)
 import Str.String as Str
 
+cons' = Str.cons
+
+infixr 5 `cons'`
+
 justifyLeft :: Int -> Chr -> Str -> Str
 justifyLeft n c s
     | diff <= 0 = s

@@ -2,10 +2,11 @@
 
 module Language.Haskell.Printf.Geometry where
 
+import Control.Monad.Fix
 import Data.String (IsString(..))
+import Language.Haskell.PrintfArg
 import Parser.Types
 import qualified Str as S
-import Language.Haskell.PrintfArg
 
 data Direction
     = Leftward
@@ -69,8 +70,7 @@ formatOne v@(Val {valWidth = Just n, valDirection = Rightward, ..}) =
                  , maybe mempty snd valPrefix
                  , S.justifyRight (n - extra) (S.chr '0') valLit
                  ]
-        else S.justifyRight n (S.chr ' ') $
-             formatOne (v {valWidth = Nothing})
+        else S.justifyRight n (S.chr ' ') $ formatOne (v {valWidth = Nothing})
   where
     extra = maybe 0 fst valPrefix + maybe 0 fst valSign
 formatOne v@(Val {valWidth = Just n, valDirection = Leftward, ..}) =

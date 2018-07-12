@@ -8,11 +8,14 @@ signature Str
     , length
     , empty
     , chr
+    , singleton
+    , elem
+    , cons'
 
     , showDecimal
     ) where
 
-import Prelude (Char, Integral, Show, Bool)
+import Prelude (Char, Integral, Show, Bool, Maybe)
 
 data Chr
 

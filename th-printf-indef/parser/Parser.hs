@@ -6,13 +6,24 @@ module Parser where
 
 import qualified Data.Set as S
 
+import Control.Monad.Fix
 import Data.CharSet
 import Parser.Types
 import Text.Parsec
 import Text.Parsec.Language (emptyDef)
 import Text.Parsec.Token
+import Text.ParserCombinators.ReadP (readP_to_S)
+import Text.Read.Lex (lexChar)
 
-parseStr = parse printfStr
+parseStr = parse printfStr "" . lexChars
+  where
+    lexChars x =
+        (`fix` x) $ \f s ->
+            if Prelude.null s
+                then []
+                else case readP_to_S lexChar s of
+                         ((c, rest):_) -> c : f rest
+                         [] -> error "malformed input"
 
 flagSet = fromList "-+ #0"
 
