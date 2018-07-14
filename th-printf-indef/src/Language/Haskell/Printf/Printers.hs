@@ -11,12 +11,13 @@ import Control.Monad
 import Data.Bool
 import Data.Char
 import Data.String (fromString)
+import Foreign.Ptr
 import GHC.Float (FFFormat(..))
 import Language.Haskell.Printf.Geometry
 import Language.Haskell.PrintfArg
 import NumUtils
 import Numeric.Natural
-import Parser.Types (Adjustment(..))
+import qualified Parser.Types as P
 import qualified Str as S
 
 type Printer n = PrintfArg n -> Value
@@ -32,8 +33,28 @@ printfString spec =
         , valSign = Nothing
         }
 
+printfShow spec = printfString (fromString . show <$> spec)
+
 printfChar spec =
     Value {valArg = S.singleton <$> spec, valPrefix = Nothing, valSign = Nothing}
+
+printfPtr :: Printer (Ptr a)
+printfPtr spec =
+    Value
+        { valArg =
+              PrintfArg
+                  { width = width spec
+                  , prec = Nothing
+                  , flagSet = P.emptyFlagSet {P.prefixed = True}
+                  , lengthSpec = Nothing
+                  , fieldSpec = 'p'
+                  , value = showIntAtBase 16 intToDigit (toInt $ value spec)
+                  }
+        , valPrefix = Just "0x"
+        , valSign = Nothing
+        }
+  where
+    toInt x = x `minusPtr` nullPtr
 
 printfDecimal :: (Integral a, Show a) => Printer a
 printfDecimal spec =
@@ -87,7 +108,7 @@ printfFloating upperFlag spec =
         case prec spec of
             Just n -> Just (fromIntegral n)
             Nothing
-                | Just ZeroPadded <- adjustment spec -> Just 6
+                | Just P.ZeroPadded <- adjustment spec -> Just 6
             _ -> Nothing
     showFloat = formatRealFloatAlt FFFixed precision (prefixed spec) upperFlag
 

@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -8,9 +10,12 @@ module Parser where
 import qualified Data.Set as S
 
 import Control.Monad.Fix
+import Control.Monad.RWS
 import Data.Char
-import Data.CharSet
+import Data.CharSet hiding (map)
+import Data.Coerce
 import Data.Maybe
+import Lens.Micro.Platform
 import Parser.Types
 import Text.Parsec
 import Text.Parsec.Language (emptyDef)
@@ -18,7 +23,10 @@ import Text.Parsec.Token
 import Text.ParserCombinators.ReadP (readP_to_S)
 import Text.Read.Lex (lexChar)
 
-parseStr = parse printfStr "" . lexChars
+type Warning = String
+
+parseStr :: String -> Either ParseError ([Atom], [[Warning]])
+parseStr = fmap (unzip . map normalizeAndWarn) . parse printfStr "" . lexChars
   where
     lexChars x =
         (`fix` x) $ \f s ->
@@ -28,9 +36,38 @@ parseStr = parse printfStr "" . lexChars
                          ((c, rest):_) -> c : f rest
                          [] -> error "malformed input"
 
+normalizeAndWarn s@Str {} = (s, [])
+normalizeAndWarn (Arg f) = (Arg a, b)
+  where
+    (_, a, b) = runRWS @_ @[Warning] (go (spec f)) () f
+    go c
+        | c `elem` "aAeEfFgGxXo" = return ()
+    go c
+        | c `elem` "cs?" = warnSign >> warnPrefix >> warnZero
+    go c
+        | c `elem` "diu" = warnPrefix
+    go 'p' = warnSign >> warnPrefix >> warnZero
+    warnFlag ::
+           (Eq a, MonadWriter [String] m, MonadState FormatArg m)
+        => Lens' FlagSet a
+        -> a
+        -> a
+        -> Char
+        -> m ()
+    warnFlag lens bad good flagName = do
+        oldVal <- use (flags_ . lens)
+        when (oldVal == bad) $ do
+            c <- use spec_
+            flags_ . lens .= good
+            tell
+                ["`" ++ [flagName] ++ "` flag has no effect on `" ++ [c] ++ "` specifier"]
+    warnSign = warnFlag signed_ True False '+'
+    warnPrefix = warnFlag prefixed_ True False '#'
+    warnZero = warnFlag adjustment_ (Just ZeroPadded) Nothing '0'
+
 flagSet = fromList "-+ #0"
 
-specSet = fromList "diuoxXfFeEaAgGpcst?"
+specSet = fromList "diuoxXfFeEaAgGpcs?"
 
 lengthSpecifiers =
     [ ("hh", DoubleH)

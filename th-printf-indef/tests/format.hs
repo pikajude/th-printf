@@ -2,6 +2,7 @@
 
 module Main where
 
+import Foreign.Ptr
 import GeneratedSpec
 import Language.Haskell.Printf
 import Language.Haskell.TH.Quote
@@ -22,3 +23,19 @@ main =
             [s|%.3a|] 0.7576 @?= "0x1.83ep-1"
             [s|%015.3a|] 0.7576 @?= "0x000001.83ep-1"
             [s|% 15.3a|] 0.7576 @?= "     0x1.83ep-1"
+        it "Show instances" $ do
+            [s|%?|] () @?= "()"
+            [s|%10?|] () @?= "        ()"
+        it "pointer" $ do
+            [s|%p|] nullPtr @?= "0x0"
+            [s|%15p|] fakePtr @?= "     0xdeadbeef"
+            -- sign flag does nothing
+            [s|%+p|] fakePtr @?= "0xdeadbeef"
+            -- prefix flag does nothing
+            [s|%#p|] fakePtr @?= "0xdeadbeef"
+            -- zero flag does nothing
+            [s|%015p|] fakePtr @?= "     0xdeadbeef"
+            -- left-pad flag does nothing
+            [s|%-15p|] fakePtr @?= "     0xdeadbeef"
+
+fakePtr = nullPtr `plusPtr` 0xdeadbeef

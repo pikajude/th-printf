@@ -14,11 +14,13 @@ import Language.Haskell.Printf.Geometry (formatOne)
 import qualified Language.Haskell.Printf.Printers as Printers
 import Language.Haskell.PrintfArg
 import Language.Haskell.TH.Lib
+import Language.Haskell.TH.Ppr (ppr)
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Parser (parseStr)
-import Parser.Types hiding (width, lengthSpec)
+import Parser.Types hiding (lengthSpec, width)
 import qualified Str as S
+import System.IO
 
 -- | Printf a string
 s :: QuasiQuoter
@@ -28,7 +30,8 @@ s =
               \s ->
                   case parseStr s of
                       Left x -> error $ show x
-                      Right y -> do
+                      Right (y, warns) -> do
+                          mapM_ showWarning (concat warns)
                           (lhss, rhss) <- unzip <$> mapM extractExpr y
                           let rhss' = foldr1 (\x y -> infixApp x [|(<>)|] y) rhss
                           lamE (map varP $ concat lhss) rhss'
@@ -36,6 +39,10 @@ s =
         , quoteType = error "this quoter cannot be used in a type context"
         , quoteDec = error "this quoter cannot be used in a declaration context"
         }
+  where
+    showWarning s = do
+        l <- qLocation
+        qRunIO $ hPutStrLn stderr $ show (ppr l) ++ ": " ++ s
 
 extractExpr (Str s) = return ([], [|fromString $(stringE s)|])
 extractExpr (Arg (FormatArg flags width precision spec lengthSpec)) = do
@@ -50,8 +57,8 @@ extractExpr (Arg (FormatArg flags width precision spec lengthSpec)) = do
                    formatter
                    [|PrintfArg
                          { flagSet = $(lift flags)
-                         , width = $(wexp)
-                         , prec = $(pexp)
+                         , width = fmap (fromInteger . fromIntegral) $(wexp)
+                         , prec = fmap (fromInteger . fromIntegral) $(pexp)
                          , value = $(varE varg)
                          , lengthSpec = $(lift lengthSpec)
                          , fieldSpec = $(lift spec)
@@ -67,8 +74,10 @@ extractExpr (Arg (FormatArg flags width precision spec lengthSpec)) = do
     formatter =
         case spec of
             's' -> [|Printers.printfString|]
+            '?' -> [|Printers.printfShow|]
             'd' -> [|Printers.printfDecimal|]
             'i' -> [|Printers.printfDecimal|]
+            'p' -> [|Printers.printfPtr|]
             'c' -> [|Printers.printfChar|]
             'u' -> [|Printers.printfUnsigned|]
             'x' -> [|Printers.printfHex False|]

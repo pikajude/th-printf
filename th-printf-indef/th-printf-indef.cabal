@@ -34,7 +34,13 @@ library parser
   exposed-modules:  Parser
                     Parser.Types
   hs-source-dirs:   parser
-  build-depends:    base, charset, containers, parsec, template-haskell
+  build-depends:    base
+                  , charset
+                  , containers
+                  , microlens-platform
+                  , mtl
+                  , parsec
+                  , template-haskell
   default-language: Haskell2010
 
 library format-impl
@@ -52,6 +58,7 @@ executable gen-tests
 test-suite format
   type:             exitcode-stdio-1.0
   main-is:          format.hs
+  other-modules:    GeneratedSpec
   mixins:           th-printf-indef  requires (Str as Impl.Str)
   hs-source-dirs:   tests
   build-depends:    base

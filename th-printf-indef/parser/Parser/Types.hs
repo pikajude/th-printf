@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveLift #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
@@ -6,6 +7,7 @@ module Parser.Types where
 import qualified Data.Set as S
 import Data.Set (Set)
 import Language.Haskell.TH.Syntax
+import Lens.Micro.Platform
 
 data Atom
     = Arg FormatArg
@@ -36,7 +38,7 @@ adjustmentFlags = S.fromList [FlagLJust, FlagZeroPadded]
 data Adjustment
     = LeftJustified
     | ZeroPadded
-    deriving (Show, Lift)
+    deriving (Show, Lift, Eq)
 
 data MaySpecify
     = Given Integer
@@ -60,6 +62,8 @@ data FlagSet = FlagSet
     , prefixed :: Bool
     } deriving (Show, Lift)
 
+emptyFlagSet = FlagSet Nothing False False False
+
 toFlagSet :: Set Flag -> FlagSet
 toFlagSet fs = set
   where
@@ -74,3 +78,20 @@ toFlagSet fs = set
             , adjustment
             , spaced = FlagSpaced `elem` fs && FlagSigned `notElem` fs
             }
+
+makeLensesFor
+    [ ("adjustment", "adjustment_")
+    , ("signed", "signed_")
+    , ("spaced", "spaced_")
+    , ("prefixed", "prefixed_")
+    ]
+    ''FlagSet
+
+makeLensesFor
+    [ ("flags", "flags_")
+    , ("width", "width_")
+    , ("precision", "precision_")
+    , ("spec", "spec_")
+    , ("lengthSpec", "lengthSpec_")
+    ]
+    ''FormatArg

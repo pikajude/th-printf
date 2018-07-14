@@ -11,7 +11,7 @@ import Data.String (IsString(..))
 import Debug.Trace
 import Language.Haskell.PrintfArg
 import Parser.Types (Adjustment(..))
-import Prelude hiding ((<>))
+import Prelude
 import qualified Str as S
 
 data Value = Value
@@ -58,5 +58,3 @@ formatOne Value {..}
         | otherwise = S.justifyRight n (S.chr ' ')
     prefix' = fromMaybe mempty valSign <> fromMaybe mempty valPrefix
     text = value valArg
-
-(<>) = mappend
