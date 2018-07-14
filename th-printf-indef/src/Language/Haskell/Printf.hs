@@ -31,7 +31,7 @@ s =
                   case parseStr s of
                       Left x -> error $ show x
                       Right (y, warns) -> do
-                          mapM_ showWarning (concat warns)
+                          mapM_ (qReport False) (concat warns)
                           (lhss, rhss) <- unzip <$> mapM extractExpr y
                           let rhss' = foldr1 (\x y -> infixApp x [|(<>)|] y) rhss
                           lamE (map varP $ concat lhss) rhss'
@@ -39,10 +39,6 @@ s =
         , quoteType = error "this quoter cannot be used in a type context"
         , quoteDec = error "this quoter cannot be used in a declaration context"
         }
-  where
-    showWarning s = do
-        l <- qLocation
-        qRunIO $ hPutStrLn stderr $ show (ppr l) ++ ": " ++ s
 
 extractExpr (Str s) = return ([], [|fromString $(stringE s)|])
 extractExpr (Arg (FormatArg flags width precision spec lengthSpec)) = do
