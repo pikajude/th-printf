@@ -34,40 +34,37 @@ parseFields ('\'':c:'\'':cs) = FieldChar c : parseFields cs
 parseFields cs@(c:_)
     | isNumeric c =
         let (s, cs') = span isNumeric cs
-         in case isIntegral s of
-                True ->
-                    let i =
-                            case s of
-                                "" -> error "stray minus sign in input"
-                                _ -> read s :: Integer
-                     in case i >= 0 of
-                            True ->
-                                case cs' of
-                                    'L':'L':cs'' -> FieldSigned64 i : parseFields cs''
-                                    'U':'L':'L':cs'' ->
-                                        FieldUnsigned64 i : parseFields cs''
-                                    'U':cs'' -> FieldUnsigned i : parseFields cs''
-                                    'V':'L':'L':cs'' ->
-                                        FieldPointer64 i : parseFields cs''
-                                    'V':cs'' -> FieldPointer i : parseFields cs''
-                                    _ -> FieldSigned i : parseFields cs'
-                            False ->
-                                case cs' of
-                                    'U':_ ->
-                                        error "refused to parse negative unsigned value"
-                                    'L':'L':cs'' -> FieldSigned64 i : parseFields cs''
-                                    'V':_ ->
-                                        error "refused to parse negative pointer value"
-                                    _ -> FieldSigned i : parseFields cs'
-                False ->
-                    let d =
-                            case reads s :: [(Double, String)] of
-                                [(d', "")] -> d'
-                                _ ->
-                                    error "badly formatted floating point number in input"
-                     in case cs' of
-                            'F':cs'' -> FieldFloating d : parseFields cs''
-                            _ -> FieldFloating d : parseFields cs'
+         in if isIntegral s
+                then let i =
+                             case s of
+                                 "" -> error "stray minus sign in input"
+                                 _ -> read s :: Integer
+                      in if i >= 0
+                             then case cs' of
+                                      'L':'L':cs'' -> FieldSigned64 i : parseFields cs''
+                                      'U':'L':'L':cs'' ->
+                                          FieldUnsigned64 i : parseFields cs''
+                                      'U':cs'' -> FieldUnsigned i : parseFields cs''
+                                      'V':'L':'L':cs'' ->
+                                          FieldPointer64 i : parseFields cs''
+                                      'V':cs'' -> FieldPointer i : parseFields cs''
+                                      _ -> FieldSigned i : parseFields cs'
+                             else case cs' of
+                                      'U':_ ->
+                                          error "refused to parse negative unsigned value"
+                                      'L':'L':cs'' -> FieldSigned64 i : parseFields cs''
+                                      'V':_ ->
+                                          error "refused to parse negative pointer value"
+                                      _ -> FieldSigned i : parseFields cs'
+                else let d =
+                             case reads s :: [(Double, String)] of
+                                 [(d', "")] -> d'
+                                 _ ->
+                                     error
+                                         "badly formatted floating point number in input"
+                      in case cs' of
+                             'F':cs'' -> FieldFloating d : parseFields cs''
+                             _ -> FieldFloating d : parseFields cs'
   where
     isNumeric c' = isDigit c' || c' `elem` "-+.eE"
     isIntegral ('-':cs') = all isDigit cs'
@@ -97,7 +94,7 @@ showL LC (FieldPointer64 u)
     | u >= 0 = "(void *)" ++ show u ++ "ULL"
     | otherwise = error "refused to show signed pointer value"
 showL LC (FieldFloating d) = show d
-showL LC (FieldAntiTest) = "0"
+showL LC FieldAntiTest = "0"
 showL LC (FieldBadLanguage _) = error "bad badlanguage"
 showL LHaskell (FieldString s) = show s
 showL LHaskell (FieldChar c) = show c
@@ -112,19 +109,18 @@ showL LHaskell (FieldUnsigned64 u)
 showL LHaskell (FieldPointer _) = "undefined"
 showL LHaskell (FieldPointer64 _) = "undefined"
 showL LHaskell (FieldFloating d) = printf "(%s :: Double)" $ show d
-showL LHaskell (FieldAntiTest) = error "tried to show antitest"
+showL LHaskell FieldAntiTest = error "tried to show antitest"
 showL LHaskell (FieldBadLanguage _) = error "bad badlanguage"
 
 genCase :: Language -> String -> IO ()
 genCase lang testcase =
     case parseFields testcase of
         FieldBadLanguage ls:rest@(FieldSigned serial:_) ->
-            case langChar lang `elem` ls of
-                True ->
-                    case lang of
-                        LC -> printf "    /* %d: excluded for C */\n" serial
-                        LHaskell -> printf "  -- %d: excluded for Haskell\n" serial
-                False -> processFields rest
+            if langChar lang `elem` ls
+                then case lang of
+                         LC -> printf "    /* %d: excluded for C */\n" serial
+                         LHaskell -> printf "  -- %d: excluded for Haskell\n" serial
+                else processFields rest
         rest -> processFields rest
   where
     langChar LHaskell = 'H'
@@ -143,7 +139,11 @@ genCase lang testcase =
                         mapM_ (printf ", %s") args
                         printf ");\n"
                     LHaskell -> do
-                        _ <- printf "  it \"test-case #%d\" $ [s|%s|]" serial (tail (init format))
+                        _ <-
+                            printf
+                                "  it \"test-case #%d\" $ [s|%s|]"
+                                serial
+                                (tail (init format))
                         mapM_ (printf " %s") args
                         printf " @?= %s" result
                         printf "\n"

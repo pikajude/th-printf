@@ -15,7 +15,7 @@ signature Str
     , isPrefixOf
     ) where
 
-import Prelude (Char, Integral, Show, Bool, Maybe, Semigroup)
+import Prelude (Char, Semigroup)
 
 data Chr
 

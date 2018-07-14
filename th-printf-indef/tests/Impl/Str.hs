@@ -67,7 +67,7 @@ lexChar s = listToMaybe (readP_to_S R.lexChar s)
 justifyLeft :: Index -> Chr -> Str -> Str
 justifyLeft n c s
     | diff P.<= 0 = s
-    | P.otherwise = s P.++ P.replicate diff ' '
+    | P.otherwise = s P.++ P.replicate diff c
   where
     diff = n P.- P.length s
 

@@ -19,6 +19,11 @@ source-repository head
   type:     git
   location: git://github.com/pikajude/th-printf.git
 
+flag werror
+  default:     False
+  manual:      True
+  description: Build with -Werror
+
 library
   exposed-modules:  Language.Haskell.Printf
                     NumUtils
@@ -29,6 +34,10 @@ library
   hs-source-dirs:   src
   build-depends:    base == 4.*, parser, str-sig, template-haskell
   default-language: Haskell2010
+  ghc-options:      -Wall
+
+  if flag(werror)
+    ghc-options: -Werror
 
 library parser
   exposed-modules:  Parser
@@ -42,18 +51,30 @@ library parser
                   , parsec
                   , template-haskell
   default-language: Haskell2010
+  ghc-options:      -Wall
+
+  if flag(werror)
+    ghc-options: -Werror
 
 library format-impl
   exposed-modules:  Impl.Str
   hs-source-dirs:   tests
   build-depends:    base
   default-language: Haskell2010
+  ghc-options:      -Wall
+
+  if flag(werror)
+    ghc-options: -Werror
 
 executable gen-tests
   main-is:          Main.hs
   hs-source-dirs:   tests/gen
   build-depends:    base
   default-language: Haskell2010
+  ghc-options:      -Wall
+
+  if flag(werror)
+    ghc-options: -Werror
 
 test-suite format
   type:             exitcode-stdio-1.0
@@ -69,3 +90,4 @@ test-suite format
                   , template-haskell
                   , th-printf-indef
   default-language: Haskell2010
+  ghc-options:      -Wall -fno-warn-type-defaults

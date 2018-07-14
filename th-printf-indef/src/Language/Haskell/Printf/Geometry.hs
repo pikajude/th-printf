@@ -1,14 +1,10 @@
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.Haskell.Printf.Geometry where
 
 import Control.Monad
-import Control.Monad.Fix
 import Data.Maybe
-import Data.String (IsString(..))
-import Debug.Trace
 import Language.Haskell.PrintfArg
 import Parser.Types (Adjustment(..))
 import Prelude
@@ -27,6 +23,7 @@ sign' pf
     | signed pf = Just "+"
     | otherwise = Nothing
 
+padDecimal :: (Eq v, Num v) => PrintfArg v -> S.Str -> S.Str
 padDecimal spec
     | prec spec == Just 0 && value spec == 0 = const ""
     | otherwise = maybe id (`S.justifyRight` S.chr '0') (prec spec)
@@ -42,6 +39,7 @@ fromPrintfArg ::
     -> Value
 fromPrintfArg f b c a = Value (f <$> a) (b a) (c a)
 
+formatOne :: Value -> S.Str
 formatOne Value {..}
     | Nothing <- width valArg = prefix' <> text
     | Just w <- width valArg =
@@ -51,6 +49,7 @@ formatOne Value {..}
                     prefix' <> S.justifyRight (w - S.length prefix') (S.chr '0') text
             Just LeftJustified -> S.justifyLeft w (S.chr ' ') (prefix' <> text)
             _ -> justify' w (prefix' <> text)
+    | otherwise = error "unreachable"
   where
     isn'tDecimal = fieldSpec valArg `notElem` ("diouxX" :: String)
     justify' n

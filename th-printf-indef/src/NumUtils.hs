@@ -6,13 +6,13 @@ module NumUtils where
 import Data.Bits
 import Data.Char
 import Data.Foldable
-import Data.Monoid (mappend)
 import Data.Ord
 import Data.String (fromString)
 import Data.Tuple
 import GHC.Base hiding ((<>), foldr)
 import GHC.Float (FFFormat(..), roundTo)
 import Numeric (floatToDigits)
+import Prelude hiding (exp)
 import qualified Str as S
 
 showIntAtBase :: (Show a, Integral a) => a -> (Int -> Char) -> a -> S.Str
@@ -62,14 +62,15 @@ formatRealFloatAlt fmt decs forceDot upper x
       where
         shownDigs =
             case digs' of
-                [x] ->
-                    S.singleton (S.chr (intToDigit x)) <>
+                [] -> undefined
+                [x'] ->
+                    S.singleton (S.chr (intToDigit x')) <>
                     (if forceDot
                          then "."
                          else "")
-                (x:xs) ->
+                (x':xs) ->
                     S.cons'
-                        (S.chr (intToDigit x))
+                        (S.chr (intToDigit x'))
                         (S.cons' (S.chr '.') (fromDigits False xs))
         digs' =
             case decs of
@@ -83,17 +84,18 @@ formatRealFloatAlt fmt decs forceDot upper x
                         (1, xs) -> 1 : xs
                         (_, ys) -> ys
                 Nothing -> digs
-        exponent = exp - 1
+        exp' = exp - 1
         shownExponent =
             S.cons'
                 (S.chr $
-                 if exponent < 0
+                 if exp' < 0
                      then '-'
                      else '+') $
-            S.justifyRight 2 (S.chr '0') $ showIntAtBase 10 intToDigit $ abs exponent
+            S.justifyRight 2 (S.chr '0') $ showIntAtBase 10 intToDigit $ abs exp'
     doFmt FFGeneric d _ =
         minimumBy (comparing S.length) [doFmt FFFixed d True, doFmt FFExponent d True]
 
+toRoundedDigits :: Maybe Int -> ([Int], Int) -> Bool -> ([Int], Int)
 toRoundedDigits Nothing (digs, exp) _ = (digs, exp)
 toRoundedDigits (Just prec) (digs, exp) fullRounding = (digs', exp + overflow)
   where
@@ -105,22 +107,26 @@ toRoundedDigits (Just prec) (digs, exp) fullRounding = (digs', exp + overflow)
                  else prec + exp)
             digs
 
-fromDigits upper ns =
-    foldr S.cons' S.empty $
-    map (S.chr .
+fromDigits :: Bool -> [Int] -> S.Str
+fromDigits upper =
+    foldr
+        (S.cons' .
+         S.chr .
          (if upper
               then toUpper
               else id) .
          intToDigit)
-        ns
+        S.empty
 
+formatHexFloat :: RealFloat a => Maybe Int -> Bool -> Bool -> a -> S.Str
 formatHexFloat decs alt upper x = doFmt (floatToDigits 2 x)
   where
     pChar
         | upper = S.chr 'P'
         | otherwise = S.chr 'p'
+    doFmt ([], _) = undefined
     doFmt ([0], 0) = "0" <> S.singleton pChar <> "+0"
-    doFmt ((_:bits), exp) =
+    doFmt (_:bits, exp) =
         fromString (show (1 + overflow)) <>
         (if not (null hexDigits) || alt
              then "."
@@ -137,8 +143,8 @@ formatHexFloat decs alt upper x = doFmt (floatToDigits 2 x)
             case decs of
                 Just n ->
                     case roundTo 16 n hexDigits' of
-                        (1, (_:digs)) -> (1, digs)
-                        x -> x
+                        (1, _:digs) -> (1, digs)
+                        x' -> x'
                 Nothing -> (0, hexDigits')
         go (a:b:c:d:xs) =
             ((a `shiftL` 3) .|. (b `shiftL` 2) .|. (c `shiftL` 1) .|. d) : go xs

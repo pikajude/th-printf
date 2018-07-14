@@ -5,7 +5,6 @@ module Main where
 import Foreign.Ptr
 import GeneratedSpec
 import Language.Haskell.Printf
-import Language.Haskell.TH.Quote
 import Test.HUnit
 import Test.Hspec
 

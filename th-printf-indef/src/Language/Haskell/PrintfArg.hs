@@ -14,8 +14,10 @@ data PrintfArg v = PrintfArg
     , value :: v
     } deriving (Show, Functor)
 
+adjustment :: PrintfArg v -> Maybe P.Adjustment
 adjustment = P.adjustment . flagSet
 
+signed, spaced, prefixed :: PrintfArg v -> Bool
 signed = P.signed . flagSet
 
 spaced = P.spaced . flagSet

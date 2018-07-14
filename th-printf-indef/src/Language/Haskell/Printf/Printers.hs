@@ -2,12 +2,10 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ExplicitForAll #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.Haskell.Printf.Printers where
 
-import Control.Monad
 import Data.Bool
 import Data.Char
 import Data.String (fromString)
@@ -16,7 +14,6 @@ import GHC.Float (FFFormat(..))
 import Language.Haskell.Printf.Geometry
 import Language.Haskell.PrintfArg
 import NumUtils
-import Numeric.Natural
 import qualified Parser.Types as P
 import qualified Str as S
 
@@ -33,8 +30,10 @@ printfString spec =
         , valSign = Nothing
         }
 
+printfShow :: Show a => Printer a
 printfShow spec = printfString (fromString . show <$> spec)
 
+printfChar :: Printer S.Chr
 printfChar spec =
     Value {valArg = S.singleton <$> spec, valPrefix = Nothing, valSign = Nothing}
 
@@ -82,8 +81,7 @@ fmtUnsigned shower p spec =
         | x < 0 = toInteger x + (-2 * toInteger lb)
         | otherwise = toInteger x
 
-printfUnsigned = fmtUnsigned (showIntAtBase 10 intToDigit) (const Nothing)
-
+printfHex :: (Bounded a, Integral a, Show a) => Bool -> Printer a
 printfHex b = fmtUnsigned showHex (prefix (bool "0x" "0X" b))
   where
     showHex =
@@ -94,13 +92,17 @@ printfHex b = fmtUnsigned showHex (prefix (bool "0x" "0X" b))
                   else id) .
              intToDigit)
 
+printfUnsigned, printfOctal :: (Bounded a, Integral a, Show a) => Printer a
+printfUnsigned = fmtUnsigned (showIntAtBase 10 intToDigit) (const Nothing)
+
 printfOctal spec
     | "0" `S.isPrefixOf` value valArg = v
     | otherwise = v {valPrefix = prefix "0" spec}
   where
-    showOctal = showIntAtBase 8 intToDigit
-    v@Value {..} = fmtUnsigned showOctal (const Nothing) spec
+    v@Value {..} = fmtUnsigned (showIntAtBase 8 intToDigit) (const Nothing) spec
 
+printfFloating, printfScientific, printfGeneric, printfFloatHex ::
+       RealFloat v => Bool -> Printer v
 printfFloating upperFlag spec =
     Value {valArg = showFloat . abs <$> spec, valPrefix = Nothing, valSign = sign' spec}
   where

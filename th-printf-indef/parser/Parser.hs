@@ -1,5 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -13,13 +13,11 @@ import Control.Monad.Fix
 import Control.Monad.RWS
 import Data.Char
 import Data.CharSet hiding (map)
-import Data.Coerce
 import Data.Maybe
 import Lens.Micro.Platform
 import Parser.Types
+import qualified Data.Set as Set
 import Text.Parsec
-import Text.Parsec.Language (emptyDef)
-import Text.Parsec.Token
 import Text.ParserCombinators.ReadP (readP_to_S)
 import Text.Read.Lex (lexChar)
 
@@ -36,10 +34,11 @@ parseStr = fmap (unzip . map normalizeAndWarn) . parse printfStr "" . lexChars
                          ((c, rest):_) -> c : f rest
                          [] -> error "malformed input"
 
+normalizeAndWarn :: Atom -> (Atom, [Warning])
 normalizeAndWarn s@Str {} = (s, [])
 normalizeAndWarn (Arg f) = (Arg a, b)
   where
-    (_, a, b) = runRWS @_ @[Warning] (go (spec f)) () f
+    (_, a, b) = runRWS @_ @[Warning] (warnLength f >> go (spec f)) () f
     go c
         | c `elem` "aAeEfFgGxXo" = return ()
     go c
@@ -47,6 +46,7 @@ normalizeAndWarn (Arg f) = (Arg a, b)
     go c
         | c `elem` "diu" = warnPrefix
     go 'p' = warnSign >> warnPrefix >> warnZero
+    go _ = undefined
     warnFlag ::
            (Eq a, MonadWriter [String] m, MonadState FormatArg m)
         => Lens' FlagSet a
@@ -54,21 +54,37 @@ normalizeAndWarn (Arg f) = (Arg a, b)
         -> a
         -> Char
         -> m ()
-    warnFlag lens bad good flagName = do
-        oldVal <- use (flags_ . lens)
+    warnFlag lens' bad good flagName = do
+        oldVal <- use (flags_ . lens')
         when (oldVal == bad) $ do
             c <- use spec_
-            flags_ . lens .= good
+            flags_ . lens' .= good
             tell
                 ["`" ++ [flagName] ++ "` flag has no effect on `" ++ [c] ++ "` specifier"]
     warnSign = warnFlag signed_ True False '+'
     warnPrefix = warnFlag prefixed_ True False '#'
     warnZero = warnFlag adjustment_ (Just ZeroPadded) Nothing '0'
+    phonyLengthSpec =
+        Set.fromList $ [(x, y) | x <- "diuoxX", y <- ["L"]] ++
+        [(x, y) | x <- "fFeEgGaA", y <- ["hh", "h", "l", "ll", "j", "z", "t"]] ++
+        [(x, y) | x <- "cs", y <- ["hh", "h", "ll", "j", "z", "t", "L"]] ++
+        map ((,) 'p') ["hh", "h", "l", "ll", "j", "z", "t", "L"]
+    warnLength FormatArg {spec, lengthSpec = Just l}
+        | (spec, show l) `Set.member` phonyLengthSpec =
+            tell
+                [ "`" ++ show l ++ "` length modifier has no effect when combined with `" ++
+                  [spec] ++
+                  "` specifier"
+                ]
+    warnLength _ = return ()
 
+flagSet :: CharSet
 flagSet = fromList "-+ #0"
 
+specSet :: CharSet
 specSet = fromList "diuoxXfFeEaAgGpcs?"
 
+lengthSpecifiers :: [(String, LengthSpecifier)]
 lengthSpecifiers =
     [ ("hh", DoubleH)
     , ("h", H)
@@ -80,8 +96,10 @@ lengthSpecifiers =
     , ("L", BigL)
     ]
 
+oneOfSet :: Stream s m Char => CharSet -> ParsecT s u m Char
 oneOfSet s = satisfy (`member` s)
 
+printfStr :: Stream s m Char => ParsecT s u m [Atom]
 printfStr = do
     atoms <-
         many $
@@ -92,6 +110,7 @@ printfStr = do
     go (a:as) = a : go as
     go [] = []
 
+fmtArg :: Stream s m Char => ParsecT s u m FormatArg
 fmtArg = do
     char '%'
     flags <-
@@ -106,21 +125,21 @@ fmtArg = do
                            '#' -> FlagPrefixed
                            '0' -> FlagZeroPadded
                            _ -> error "???"
-           let flagSet = S.fromList fs
-           if S.size flagSet < length fs
+           let flagSet' = S.fromList fs
+           if S.size flagSet' < length fs
                then fail "Duplicate flags specified"
-               else pure $ toFlagSet flagSet
+               else pure $ toFlagSet flagSet'
     width <- optionMaybe (choice [Given <$> nat, Need <$ char '*']) <?> "width"
     precision <-
         optionMaybe
-            ((do char '.'
-                 optionMaybe $ choice [Given <$> nat, Need <$ char '*'])) <?>
+            (do char '.'
+                optionMaybe $ choice [Given <$> nat, Need <$ char '*']) <?>
         "precision"
     lengthSpec <-
         optionMaybe $ choice $ Prelude.map (\(a, b) -> b <$ string a) lengthSpecifiers
     spec <- oneOfSet specSet <?> "valid specifier"
     pure $ FormatArg flags width (fromMaybe (Given 0) <$> precision) spec lengthSpec
-
-nat = do
-    c <- many1 $ satisfy isDigit
-    return $ read @Integer c
+  where
+    nat = do
+        c <- many1 $ satisfy isDigit
+        return $ read @Integer c

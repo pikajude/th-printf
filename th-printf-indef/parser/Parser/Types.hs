@@ -23,7 +23,17 @@ data LengthSpecifier
     | J
     | Z
     | T
-    deriving (Show, Eq, Lift)
+    deriving (Eq, Lift)
+
+instance Show LengthSpecifier where
+    show DoubleH = "hh"
+    show H = "h"
+    show DoubleL = "ll"
+    show BigL = "L"
+    show L = "l"
+    show J = "j"
+    show Z = "z"
+    show T = "t"
 
 data Flag
     = FlagLJust
@@ -33,6 +43,7 @@ data Flag
     | FlagZeroPadded
     deriving (Show, Eq, Ord)
 
+adjustmentFlags :: Set Flag
 adjustmentFlags = S.fromList [FlagLJust, FlagZeroPadded]
 
 data Adjustment
@@ -62,16 +73,17 @@ data FlagSet = FlagSet
     , prefixed :: Bool
     } deriving (Show, Lift)
 
+emptyFlagSet :: FlagSet
 emptyFlagSet = FlagSet Nothing False False False
 
 toFlagSet :: Set Flag -> FlagSet
-toFlagSet fs = set
+toFlagSet fs = set'
   where
     adjustment
         | FlagLJust `S.member` fs = Just LeftJustified
         | FlagZeroPadded `S.member` fs = Just ZeroPadded
         | otherwise = Nothing
-    set =
+    set' =
         FlagSet
             { signed = FlagSigned `elem` fs
             , prefixed = FlagPrefixed `elem` fs
