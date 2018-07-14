@@ -21,6 +21,7 @@ source-repository head
 
 library
   exposed-modules:  Language.Haskell.Printf
+                    NumUtils
   signatures:       Str
   other-modules:    Language.Haskell.Printf.Geometry
                     Language.Haskell.Printf.Printers
@@ -39,6 +40,12 @@ library parser
 library format-impl
   exposed-modules:  Impl.Str
   hs-source-dirs:   tests
+  build-depends:    base
+  default-language: Haskell2010
+
+executable gen-tests
+  main-is:          Main.hs
+  hs-source-dirs:   tests/gen
   build-depends:    base
   default-language: Haskell2010
 

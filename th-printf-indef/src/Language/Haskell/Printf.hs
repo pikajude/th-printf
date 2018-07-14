@@ -17,7 +17,7 @@ import Language.Haskell.TH.Lib
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Parser (parseStr)
-import Parser.Types hiding (width)
+import Parser.Types hiding (width, lengthSpec)
 import qualified Str as S
 
 -- | Printf a string
@@ -38,7 +38,7 @@ s =
         }
 
 extractExpr (Str s) = return ([], [|fromString $(stringE s)|])
-extractExpr (Arg (FormatArg flags width precision spec)) = do
+extractExpr (Arg (FormatArg flags width precision spec lengthSpec)) = do
     (warg, wexp) <- extractArgs width
     (parg, pexp) <- extractArgs precision
     varg <- newName "arg"
@@ -50,9 +50,11 @@ extractExpr (Arg (FormatArg flags width precision spec)) = do
                    formatter
                    [|PrintfArg
                          { flagSet = $(lift flags)
-                         , width = $(wexp)
-                         , prec = $(pexp)
+                         , width = fmap (fromInteger . fromIntegral) $(wexp)
+                         , prec = fmap (fromInteger . fromIntegral) $(pexp)
                          , value = $(varE varg)
+                         , lengthSpec = $(lift lengthSpec)
+                         , fieldSpec = $(lift spec)
                          }|]))
   where
     extractArgs n =
@@ -68,7 +70,17 @@ extractExpr (Arg (FormatArg flags width precision spec)) = do
             'd' -> [|Printers.printfDecimal|]
             'i' -> [|Printers.printfDecimal|]
             'c' -> [|Printers.printfChar|]
-            'u' -> [|Printers.printfNatural|]
-            n -> errorInternal $ "Unhandled format specifier `" ++ [n] ++ "`"
+            'u' -> [|Printers.printfUnsigned|]
+            'x' -> [|Printers.printfHex False|]
+            'X' -> [|Printers.printfHex True|]
+            'o' -> [|Printers.printfOctal|]
+            'f' -> [|Printers.printfFloating False|]
+            'F' -> [|Printers.printfFloating True|]
+            'e' -> [|Printers.printfScientific False|]
+            'E' -> [|Printers.printfScientific True|]
+            'g' -> [|Printers.printfGeneric False|]
+            'G' -> [|Printers.printfGeneric True|]
+            'a' -> [|Printers.printfFloatHex False|]
+            'A' -> [|Printers.printfFloatHex True|]
 
 errorInternal s = error $ "th-printf internal error: " ++ s

@@ -12,6 +12,17 @@ data Atom
     | Str String
     deriving (Show, Lift)
 
+data LengthSpecifier
+    = DoubleH
+    | H
+    | DoubleL
+    | BigL
+    | L
+    | J
+    | Z
+    | T
+    deriving (Show, Eq, Lift)
+
 data Flag
     = FlagLJust
     | FlagSigned
@@ -37,6 +48,7 @@ data FormatArg = FormatArg
     , width :: Maybe MaySpecify
     , precision :: Maybe MaySpecify
     , spec :: Char
+    , lengthSpec :: Maybe LengthSpecifier
     } deriving (Show, Lift)
 
 type FormatStr = [Atom]
@@ -49,12 +61,7 @@ data FlagSet = FlagSet
     } deriving (Show, Lift)
 
 toFlagSet :: Set Flag -> FlagSet
-toFlagSet fs
-    | S.size (S.intersection fs adjustmentFlags) > 1 =
-        error
-            "Error: multiple adjustment flags specified; you can only have one of '-', '0', ' '"
-    | spaced set && signed set = error "'+' and ' ' specifiers cannot be used together"
-    | otherwise = set
+toFlagSet fs = set
   where
     adjustment
         | FlagLJust `S.member` fs = Just LeftJustified
@@ -65,5 +72,5 @@ toFlagSet fs
             { signed = FlagSigned `elem` fs
             , prefixed = FlagPrefixed `elem` fs
             , adjustment
-            , spaced = FlagSpaced `elem` fs
+            , spaced = FlagSpaced `elem` fs && FlagSigned `notElem` fs
             }

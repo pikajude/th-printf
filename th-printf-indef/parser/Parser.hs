@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -7,7 +8,9 @@ module Parser where
 import qualified Data.Set as S
 
 import Control.Monad.Fix
+import Data.Char
 import Data.CharSet
+import Data.Maybe
 import Parser.Types
 import Text.Parsec
 import Text.Parsec.Language (emptyDef)
@@ -28,6 +31,17 @@ parseStr = parse printfStr "" . lexChars
 flagSet = fromList "-+ #0"
 
 specSet = fromList "diuoxXfFeEaAgGpcst?"
+
+lengthSpecifiers =
+    [ ("hh", DoubleH)
+    , ("h", H)
+    , ("ll", DoubleL)
+    , ("l", L)
+    , ("j", J)
+    , ("z", Z)
+    , ("t", T)
+    , ("L", BigL)
+    ]
 
 oneOfSet s = satisfy (`member` s)
 
@@ -63,9 +77,13 @@ fmtArg = do
     precision <-
         optionMaybe
             ((do char '.'
-                 choice [Given <$> nat, Need <$ char '*'])) <?>
+                 optionMaybe $ choice [Given <$> nat, Need <$ char '*'])) <?>
         "precision"
+    lengthSpec <-
+        optionMaybe $ choice $ Prelude.map (\(a, b) -> b <$ string a) lengthSpecifiers
     spec <- oneOfSet specSet <?> "valid specifier"
-    pure $ FormatArg flags width precision spec
+    pure $ FormatArg flags width (fromMaybe (Given 0) <$> precision) spec lengthSpec
 
-TokenParser {natural = nat} = makeTokenParser emptyDef
+nat = do
+    c <- many1 $ satisfy isDigit
+    return $ read @Integer c

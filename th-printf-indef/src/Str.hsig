@@ -11,11 +11,11 @@ signature Str
     , singleton
     , elem
     , cons'
-
-    , showDecimal
+    , take
+    , isPrefixOf
     ) where
 
-import Prelude (Char, Integral, Show, Bool, Maybe)
+import Prelude (Char, Integral, Show, Bool, Maybe, Semigroup)
 
 data Chr
 
@@ -23,6 +23,6 @@ data Str
 
 data Index
 
-chr :: Char -> Chr
+instance Semigroup Str
 
-showDecimal :: (Integral a, Show a) => a -> Str
+chr :: Char -> Chr

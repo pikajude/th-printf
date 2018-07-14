@@ -1,0 +1,3 @@
+[submodule "vendor/printf-tests"]
+	path = vendor/printf-tests
+	url = https://github.com/BartMassey/printf-tests
