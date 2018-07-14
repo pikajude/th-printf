@@ -50,8 +50,8 @@ extractExpr (Arg (FormatArg flags width precision spec lengthSpec)) = do
                    formatter
                    [|PrintfArg
                          { flagSet = $(lift flags)
-                         , width = fmap (fromInteger . fromIntegral) $(wexp)
-                         , prec = fmap (fromInteger . fromIntegral) $(pexp)
+                         , width = $(wexp)
+                         , prec = $(pexp)
                          , value = $(varE varg)
                          , lengthSpec = $(lift lengthSpec)
                          , fieldSpec = $(lift spec)
