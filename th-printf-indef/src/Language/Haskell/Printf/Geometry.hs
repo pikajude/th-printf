@@ -5,6 +5,7 @@ module Language.Haskell.Printf.Geometry where
 
 import Control.Monad
 import Data.Maybe
+import Data.Semigroup ((<>))
 import Language.Haskell.PrintfArg
 import Parser.Types (Adjustment(..))
 import Prelude

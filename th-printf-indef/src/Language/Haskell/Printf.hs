@@ -19,7 +19,35 @@ import Language.Haskell.TH.Syntax
 import Parser (parseStr)
 import Parser.Types hiding (lengthSpec, width)
 
--- | Printf a string
+-- * Formatting strings
+-- | @
+-- ['s'|Hello, %s! (%d people greeted)|] :: ... -> String
+-- @
+--
+-- This formatter follows the guidelines listed
+-- <http://www.cplusplus.com/reference/cstdio/printf/ here>, except for
+-- @%n@ (store number of printed characters) for obvious
+-- reasons.
+--
+-- @
+-- %c     :: 'Char'
+-- %s     :: 'String'
+--
+-- %?     :: 'Show' a => a
+--
+-- %d, %i :: 'Integral' i => i
+--
+-- %u     :: ('Bounded' i, 'Integral' i) => i
+-- %o     :: ('Bounded' i, 'Integral' i) => i
+-- %x, %X :: ('Bounded' i, 'Integral' i) => i
+--
+-- %a, %A :: 'RealFloat' f => f
+-- %e, %E :: 'RealFloat' f => f
+-- %f, %F :: 'RealFloat' f => f
+-- %g, %G :: 'RealFloat' f => f
+--
+-- %p     :: 'Foreign.Ptr.Ptr' a
+-- @
 s :: QuasiQuoter
 s =
     QuasiQuoter

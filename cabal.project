@@ -1,5 +1,6 @@
 packages: th-printf-indef
           th-printf-str
           th-printf-text
+          th-printf-test
 
-allow-newer: str-sig:base, str-string:base, str-text:base
+allow-newer: *:base, *:template-haskell

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -55,7 +56,6 @@ printfPtr spec =
   where
     toInt x = x `minusPtr` nullPtr
 
-printfDecimal :: (Integral a, Show a) => Printer a
 printfDecimal spec =
     Value
         { valArg = padDecimal spec . showIntAtBase 10 intToDigit . abs <$> spec
@@ -64,7 +64,7 @@ printfDecimal spec =
         }
 
 fmtUnsigned ::
-       forall a. (Bounded a, Integral a, Show a)
+       forall a. (Bounded a, Integral a)
     => (Integer -> S.Str)
     -> (PrintfArg a -> Maybe S.Str)
     -> Printer a
@@ -81,7 +81,6 @@ fmtUnsigned shower p spec =
         | x < 0 = toInteger x + (-2 * toInteger lb)
         | otherwise = toInteger x
 
-printfHex :: (Bounded a, Integral a, Show a) => Bool -> Printer a
 printfHex b = fmtUnsigned showHex (prefix (bool "0x" "0X" b))
   where
     showHex =
@@ -92,7 +91,6 @@ printfHex b = fmtUnsigned showHex (prefix (bool "0x" "0X" b))
                   else id) .
              intToDigit)
 
-printfUnsigned, printfOctal :: (Bounded a, Integral a, Show a) => Printer a
 printfUnsigned = fmtUnsigned (showIntAtBase 10 intToDigit) (const Nothing)
 
 printfOctal spec
@@ -101,8 +99,6 @@ printfOctal spec
   where
     v@Value {..} = fmtUnsigned (showIntAtBase 8 intToDigit) (const Nothing) spec
 
-printfFloating, printfScientific, printfGeneric, printfFloatHex ::
-       RealFloat v => Bool -> Printer v
 printfFloating upperFlag spec =
     Value {valArg = showFloat . abs <$> spec, valPrefix = Nothing, valSign = sign' spec}
   where

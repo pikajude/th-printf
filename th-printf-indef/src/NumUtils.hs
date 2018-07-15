@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-dodgy-imports #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -7,6 +8,7 @@ import Data.Bits
 import Data.Char
 import Data.Foldable
 import Data.Ord
+import Data.Semigroup ((<>))
 import Data.String (fromString)
 import Data.Tuple
 import GHC.Base hiding ((<>), foldr)
