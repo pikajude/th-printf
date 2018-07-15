@@ -26,11 +26,11 @@ flag werror
 
 library
   exposed-modules:  Language.Haskell.Printf
-                    NumUtils
   signatures:       Str
   other-modules:    Language.Haskell.Printf.Geometry
                     Language.Haskell.Printf.Printers
                     Language.Haskell.PrintfArg
+                    NumUtils
   hs-source-dirs:   src
   build-depends:    base == 4.*, parser, str-sig, template-haskell
   default-language: Haskell2010

@@ -33,14 +33,18 @@ import Parser.Types hiding (lengthSpec, width)
 -- %c     :: 'Char'
 -- %s     :: 'String'
 --
+-- -- datatypes with Show instances
 -- %?     :: 'Show' a => a
 --
+-- -- signed integer types
 -- %d, %i :: 'Integral' i => i
 --
+-- -- unsigned integer types
 -- %u     :: ('Bounded' i, 'Integral' i) => i
 -- %o     :: ('Bounded' i, 'Integral' i) => i
 -- %x, %X :: ('Bounded' i, 'Integral' i) => i
 --
+-- -- floats
 -- %a, %A :: 'RealFloat' f => f
 -- %e, %E :: 'RealFloat' f => f
 -- %f, %F :: 'RealFloat' f => f
