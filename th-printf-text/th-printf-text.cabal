@@ -1,5 +1,5 @@
 name:               th-printf-text
-version:            0.1.0.0
+version:            0.1.0
 synopsis:           Template Haskell printf
 description:        Quasiquoters for printf, producing @Text@
 license:            BSD3

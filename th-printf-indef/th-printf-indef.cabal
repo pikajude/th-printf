@@ -1,5 +1,5 @@
 name:          th-printf-indef
-version:       0.5.1
+version:       0.1.0
 synopsis:      Indefinite package for th-printf
 description:
   Quasiquoters for printf: string, bytestring, text.
