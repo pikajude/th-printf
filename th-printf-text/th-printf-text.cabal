@@ -13,15 +13,15 @@ extra-source-files: ChangeLog.md
 cabal-version:      2.0
 
 library
-  exposed-modules:  Language.Haskell.Printf.Text
-                    Language.Haskell.Printf.Text.Lazy
-  mixins:           th-printf-indef (Language.Haskell.Printf as PrintfLazy)
-                           requires (Str as Text.Lazy)
-                  , th-printf-indef (Language.Haskell.Printf as Printf)
-                           requires (Str as Text.Strict)
-  hs-source-dirs:   src
-  build-depends:    base == 4.*, text-impl, th-printf-indef
-  default-language: Haskell2010
+  reexported-modules: Language.Haskell.Printf.Text
+                    , Language.Haskell.Printf.Text.Lazy
+  mixins:             th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text.Lazy)
+                             requires (Str as Text.Lazy)
+                    , th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text)
+                             requires (Str as Text.Strict)
+  hs-source-dirs:     src
+  build-depends:      base == 4.*, text-impl, th-printf-indef
+  default-language:   Haskell2010
 
 library text-impl
   exposed-modules:  Text.Lazy
