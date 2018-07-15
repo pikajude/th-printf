@@ -19,9 +19,11 @@ library
   hs-source-dirs:     src
   build-depends:      base == 4.*, str-justified, th-printf-indef
   default-language:   Haskell2010
+  ghc-options:        -Wall
 
 library str-justified
   exposed-modules:  StrJustified
   hs-source-dirs:   src
   build-depends:    base, str-string
   default-language: Haskell2010
+  ghc-options:      -Wall

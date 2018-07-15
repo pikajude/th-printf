@@ -22,6 +22,7 @@ library
   hs-source-dirs:     src
   build-depends:      base == 4.*, text-impl, th-printf-indef
   default-language:   Haskell2010
+  ghc-options:        -Wall
 
 library text-impl
   exposed-modules:  Text.Lazy
@@ -29,3 +30,4 @@ library text-impl
   hs-source-dirs:   src
   build-depends:    base, str-text, text
   default-language: Haskell2010
+  ghc-options:      -Wall

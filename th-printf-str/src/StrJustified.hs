@@ -3,19 +3,13 @@ module StrJustified
     , module StrJustified
     ) where
 
-import Data.Char (intToDigit)
-import Numeric (showIntAtBase)
 import Prelude hiding (replicate)
 import Str.String as Str
-
-cons' = Str.cons
-
-infixr 5 `cons'`
 
 justifyLeft :: Int -> Chr -> Str -> Str
 justifyLeft n c s
     | diff <= 0 = s
-    | otherwise = s ++ Str.replicate diff ' '
+    | otherwise = s ++ Str.replicate diff c
   where
     diff = n - Str.length s
 
@@ -29,13 +23,7 @@ justifyRight n c s
 chr :: Char -> Chr
 chr = id
 
-showDecimal :: (Integral a, Show a) => a -> Str
-showDecimal = show
+cons' :: Chr -> String -> String
+cons' a b = a : b
 
-type Output = String
-
-fromOutput :: Output -> Str
-fromOutput = id
-
-finalize :: Str -> Output
-finalize = id
+infixr 5 `cons'`
