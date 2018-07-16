@@ -13,10 +13,12 @@ signature Str
     , cons'
     , take
     , isPrefixOf
+    , hPutStr
     ) where
 
-import Prelude (Char)
 import Data.Semigroup (Semigroup)
+import Prelude (Char)
+import System.IO (Handle, IO)
 
 data Chr
 
@@ -27,3 +29,5 @@ data Index
 instance Semigroup Str
 
 chr :: Char -> Chr
+
+hPutStr :: Handle -> Str -> IO ()

@@ -26,6 +26,7 @@ flag werror
 
 library
   exposed-modules:  Language.Haskell.Printf
+                    Language.Haskell.Printf.Lib
   signatures:       Str
   other-modules:    Language.Haskell.Printf.Geometry
                     Language.Haskell.Printf.Printers

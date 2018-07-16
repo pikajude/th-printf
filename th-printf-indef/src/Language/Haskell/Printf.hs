@@ -6,22 +6,20 @@
 
 module Language.Haskell.Printf
     ( s
+    , p
+    , hp
     ) where
 
-import Data.Maybe
-import Data.String (fromString)
-import Language.Haskell.Printf.Geometry (formatOne)
-import qualified Language.Haskell.Printf.Printers as Printers
-import Language.Haskell.PrintfArg
+import Control.Monad.IO.Class
+import Language.Haskell.Printf.Lib
 import Language.Haskell.TH.Lib
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
-import Parser (parseStr)
-import Parser.Types hiding (lengthSpec, width)
+import qualified Str as S
+import System.IO (stdout)
 
--- * Formatting strings
 -- | @
--- ['s'|Hello, %s! (%d people greeted)|] :: ... -> String
+-- ['s'|Hello, %s! (%d people greeted)|] :: ... -> 'S.Str'
 -- @
 --
 -- This formatter follows the guidelines listed
@@ -30,8 +28,8 @@ import Parser.Types hiding (lengthSpec, width)
 -- reasons.
 --
 -- @
--- %c     :: 'Char'
--- %s     :: 'String'
+-- %c     :: 'S.Chr'
+-- %s     :: 'S.Str'
 --
 -- -- datatypes with Show instances
 -- %?     :: 'Show' a => a
@@ -52,69 +50,54 @@ import Parser.Types hiding (lengthSpec, width)
 --
 -- %p     :: 'Foreign.Ptr.Ptr' a
 -- @
+--
+-- N.B.: For consistency with other @printf@ implementations, arguments formatted as
+-- unsigned integer types will \"underflow\" if negative.
 s :: QuasiQuoter
 s =
-    QuasiQuoter
+    quoter
         { quoteExp =
-              \s' ->
-                  case parseStr s' of
-                      Left x -> error $ show x
-                      Right (y, warns) -> do
-                          mapM_ (qReport False) (concat warns)
-                          (lhss, rhss) <- unzip <$> mapM extractExpr y
-                          let rhss' = foldr1 (\x y' -> infixApp x [|(<>)|] y') rhss
-                          lamE (map varP $ concat lhss) rhss'
+              \s' -> do
+                  (lhss, rhs) <- toSplices s'
+                  return $ LamE lhss rhs
+        }
+
+-- | Like 's', but prints the resulting string to @stdout@.
+--
+-- @
+-- [p|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => ... -> m ()
+-- @
+p :: QuasiQuoter
+p =
+    quoter
+        { quoteExp =
+              \s' -> do
+                  (lhss, rhs) <- toSplices s'
+                  lamE (map pure lhss) [|liftIO (S.hPutStr stdout $(pure rhs))|]
+        }
+
+-- | Like 'p', but takes as its first argument the 'System.IO.Handle' to print to.
+--
+-- @
+-- [hp|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => 'System.IO.Handle' -> ... -> m ()
+-- @
+hp :: QuasiQuoter
+hp =
+    quoter
+        { quoteExp =
+              \s' -> do
+                  (lhss, rhs) <- toSplices s'
+                  h <- newName "h"
+                  lamE
+                      (varP h : map pure lhss)
+                      [|liftIO (S.hPutStr $(varE h) $(pure rhs))|]
+        }
+
+quoter :: QuasiQuoter
+quoter =
+    QuasiQuoter
+        { quoteExp = undefined
         , quotePat = error "this quoter cannot be used in a pattern context"
         , quoteType = error "this quoter cannot be used in a type context"
         , quoteDec = error "this quoter cannot be used in a declaration context"
         }
-
-extractExpr :: Atom -> Q ([Name], ExpQ)
-extractExpr (Str s') = return ([], [|fromString $(stringE s')|])
-extractExpr (Arg (FormatArg flags' width' precision' spec' lengthSpec')) = do
-    (warg, wexp) <- extractArgs width'
-    (parg, pexp) <- extractArgs precision'
-    varg <- newName "arg"
-    return
-        ( catMaybes [warg, parg, Just varg]
-        , appE
-              [|formatOne|]
-              (appE
-                   formatter
-                   [|PrintfArg
-                         { flagSet = $(lift flags')
-                         , width = fmap (fromInteger . fromIntegral) $(wexp)
-                         , prec = fmap (fromInteger . fromIntegral) $(pexp)
-                         , value = $(varE varg)
-                         , lengthSpec = $(lift lengthSpec')
-                         , fieldSpec = $(lift spec')
-                         }|]))
-  where
-    extractArgs n =
-        case n of
-            Just Need -> do
-                a <- newName "arg"
-                pure (Just a, [|Just $(varE a)|])
-            Just (Given n') -> pure (Nothing, [|Just $(litE $ integerL n')|])
-            Nothing -> pure (Nothing, [|Nothing|])
-    formatter =
-        case spec' of
-            's' -> [|Printers.printfString|]
-            '?' -> [|Printers.printfShow|]
-            'd' -> [|Printers.printfDecimal|]
-            'i' -> [|Printers.printfDecimal|]
-            'p' -> [|Printers.printfPtr|]
-            'c' -> [|Printers.printfChar|]
-            'u' -> [|Printers.printfUnsigned|]
-            'x' -> [|Printers.printfHex False|]
-            'X' -> [|Printers.printfHex True|]
-            'o' -> [|Printers.printfOctal|]
-            'f' -> [|Printers.printfFloating False|]
-            'F' -> [|Printers.printfFloating True|]
-            'e' -> [|Printers.printfScientific False|]
-            'E' -> [|Printers.printfScientific True|]
-            'g' -> [|Printers.printfGeneric False|]
-            'G' -> [|Printers.printfGeneric True|]
-            'a' -> [|Printers.printfFloatHex False|]
-            'A' -> [|Printers.printfFloatHex True|]
-            _ -> undefined

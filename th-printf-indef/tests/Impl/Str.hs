@@ -7,6 +7,10 @@ import qualified Prelude as P
 import qualified Data.List
 import Text.ParserCombinators.ReadP
 import qualified Text.Read.Lex as R
+import qualified System.IO
+
+hPutStr :: System.IO.Handle -> P.String -> System.IO.IO ()
+hPutStr = System.IO.hPutStr
 
 type Str = P.String
 

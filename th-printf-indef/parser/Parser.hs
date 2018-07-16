@@ -42,7 +42,7 @@ normalizeAndWarn (Arg f) = (Arg a, b)
     go c
         | c `elem` "aAeEfFgGxXo" = return ()
     go c
-        | c `elem` "cs?" = warnSign >> warnPrefix >> warnZero
+        | c `elem` "cs?" = warnSign >> warnPrefix >> warnZero >> warnSpace
     go c
         | c `elem` "diu" = warnPrefix
     go 'p' = warnSign >> warnPrefix >> warnZero
@@ -63,6 +63,7 @@ normalizeAndWarn (Arg f) = (Arg a, b)
                 ["`" ++ [flagName] ++ "` flag has no effect on `" ++ [c] ++ "` specifier"]
     warnSign = warnFlag signed_ True False '+'
     warnPrefix = warnFlag prefixed_ True False '#'
+    warnSpace = warnFlag spaced_ True False ' '
     warnZero = warnFlag adjustment_ (Just ZeroPadded) Nothing '0'
     phonyLengthSpec =
         Set.fromList $ [(x, y) | x <- "diuoxX", y <- ["L"]] ++

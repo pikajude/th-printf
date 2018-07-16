@@ -1,10 +1,12 @@
 module StrJustified
     ( module Str
     , module StrJustified
+    , hPutStr
     ) where
 
 import Prelude hiding (replicate)
 import Str.String as Str
+import System.IO
 
 justifyLeft :: Int -> Chr -> Str -> Str
 justifyLeft n c s
