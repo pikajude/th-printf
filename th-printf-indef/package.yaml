@@ -1,0 +1,75 @@
+name:        th-printf-indef
+version:     0.1.0
+synopsis:    Indefinite package for th-printf
+description: >
+  Quasiquoters for printf: string, bytestring, text.
+
+  .
+
+  This package is indefinite. See @th-printf-text@ or @th-printf-str@ for implementations.
+license:     MIT
+author:      Jude Taylor
+maintainer:  me@jude.xyz
+tested-with: GHC == 8.4.3
+category:    Text
+github:      pikajude/th-printf
+
+defaults: pikajude/hpack-template@v1
+
+flags:
+  werror:
+    description: Build with -Werror
+    default:     False
+    manual:      True
+
+dependencies:
+  - base == 4.*
+
+when:
+  - condition: flag(werror)
+    ghc-options: -Werror
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Language.Haskell.Printf
+    - Language.Haskell.Printf.Lib
+  dependencies:
+    - parser
+    - str-sig
+    - template-haskell
+  verbatim:
+    signatures: Str
+
+internal-libraries:
+  parser:
+    source-dirs: parser
+    dependencies:
+      - charset
+      - containers
+      - microlens-platform
+      - mtl
+      - parsec
+      - template-haskell
+
+  format-impl:
+    source-dirs: tests/impl
+
+executables:
+  gen-tests:
+    main: Main.hs
+    source-dirs: tests/gen
+
+tests:
+  format:
+    main: format.hs
+    source-dirs: tests
+    dependencies:
+      - HUnit
+      - QuickCheck
+      - format-impl
+      - hspec
+      - template-haskell
+      - th-printf-indef
+    verbatim:
+      mixins: th-printf-indef requires (Str as Impl.Str)
