@@ -25,6 +25,8 @@ flags:
 dependencies:
   - base == 4.*
 
+ghc-options: -Wno-identities -Wno-missing-exported-signatures -Wno-missing-export-lists
+
 when:
   - condition: flag(werror)
     ghc-options: -Werror

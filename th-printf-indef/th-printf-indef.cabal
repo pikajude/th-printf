@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7890bd9f875b9dbe91c6d6482947c8e5e587056c8db161c3e83e1caca8d484ef
+-- hash: aa12722fb0f9a94a31a1d0776e8373d22a0f02579d295a5d1ab802ff80857d6a
 
 name:           th-printf-indef
 version:        0.1.0
@@ -43,7 +43,7 @@ library
   hs-source-dirs:
       src
   default-extensions: NoMonomorphismRestriction
-  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe
+  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe -Wno-identities -Wno-missing-exported-signatures -Wno-missing-export-lists
   build-depends:
       base ==4.*
     , parser
@@ -62,7 +62,7 @@ library format-impl
   hs-source-dirs:
       tests/impl
   default-extensions: NoMonomorphismRestriction
-  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe
+  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe -Wno-identities -Wno-missing-exported-signatures -Wno-missing-export-lists
   build-depends:
       base ==4.*
   if flag(werror)
@@ -78,7 +78,7 @@ library parser
   hs-source-dirs:
       parser
   default-extensions: NoMonomorphismRestriction
-  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe
+  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe -Wno-identities -Wno-missing-exported-signatures -Wno-missing-export-lists
   build-depends:
       base ==4.*
     , charset
@@ -98,7 +98,7 @@ executable gen-tests
   hs-source-dirs:
       tests/gen
   default-extensions: NoMonomorphismRestriction
-  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe
+  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe -Wno-identities -Wno-missing-exported-signatures -Wno-missing-export-lists
   build-depends:
       base ==4.*
   if flag(werror)
@@ -114,7 +114,7 @@ test-suite format
   hs-source-dirs:
       tests
   default-extensions: NoMonomorphismRestriction
-  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe
+  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe -Wno-identities -Wno-missing-exported-signatures -Wno-missing-export-lists
   build-depends:
       HUnit
     , QuickCheck

@@ -1,33 +1,57 @@
-name:               th-printf-text
-version:            0.1.0
-synopsis:           Template Haskell printf
-description:        Quasiquoters for printf, producing @Text@
-license:            BSD3
-license-file:       LICENSE
-author:             Jude Taylor
-maintainer:         me@jude.xyz
-tested-with:        GHC == 8.4.3
-category:           Text
-build-type:         Simple
-extra-source-files: ChangeLog.md
-cabal-version:      2.0
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 3cee526bbdb66a00fe6771772102cb37bfb239be874ac0a0f965e50a37fa888a
+
+name:           th-printf-text
+version:        0.1.0
+synopsis:       Indefinite package for th-printf
+description:    Quasiquoters for printf, producing @Text@
+category:       Text
+homepage:       https://github.com/pikajude/th-printf#readme
+bug-reports:    https://github.com/pikajude/th-printf/issues
+author:         Jude Taylor
+maintainer:     me@jude.xyz
+license-file:   LICENSE
+tested-with:    GHC == 8.4.3
+build-type:     Simple
+cabal-version:  >= 2.0
+
+source-repository head
+  type: git
+  location: https://github.com/pikajude/th-printf
 
 library
-  reexported-modules: Language.Haskell.Printf.Text
-                    , Language.Haskell.Printf.Text.Lazy
-  mixins:             th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text.Lazy)
-                             requires (Str as Text.Lazy)
-                    , th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text)
-                             requires (Str as Text.Strict)
-  hs-source-dirs:     src
-  build-depends:      base == 4.*, text-impl, th-printf-indef
-  default-language:   Haskell2010
-  ghc-options:        -Wall
+  other-modules:
+      Paths_th_printf_text
+  reexported-modules:
+      Language.Haskell.Printf.Text, Language.Haskell.Printf.Text.Lazy
+  default-extensions: NoMonomorphismRestriction
+  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe
+  build-depends:
+      base ==4.*
+    , text-impl
+    , th-printf-indef
+  default-language: Haskell2010
+  mixins:
+      th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text.Lazy)
+        requires (Str as Text.Lazy),
+      th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text)
+        requires (Str as Text.Strict)
 
 library text-impl
-  exposed-modules:  Text.Lazy
-                    Text.Strict
-  hs-source-dirs:   src
-  build-depends:    base, str-text, text
+  exposed-modules:
+      Text.Lazy
+      Text.Strict
+  other-modules:
+      Paths_th_printf_text
+  hs-source-dirs:
+      src
+  default-extensions: NoMonomorphismRestriction
+  ghc-options: -Weverything -Wno-unsafe -Wno-missing-local-signatures -Wno-missing-import-lists -Wno-implicit-prelude -Wno-all-missed-specialisations -Wno-safe
+  build-depends:
+      base ==4.*
+    , str-text
+    , text
   default-language: Haskell2010
-  ghc-options:      -Wall

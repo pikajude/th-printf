@@ -1,0 +1,33 @@
+name:        th-printf-text
+version:     0.1.0
+synopsis:    Indefinite package for th-printf
+description: Quasiquoters for printf, producing @Text@
+author:      Jude Taylor
+maintainer:  me@jude.xyz
+tested-with: GHC == 8.4.3
+category:    Text
+github:      pikajude/th-printf
+
+defaults: pikajude/hpack-template@v1
+
+dependencies:
+  - base == 4.*
+
+library:
+  reexported-modules: Language.Haskell.Printf.Text, Language.Haskell.Printf.Text.Lazy
+  dependencies:
+    - text-impl
+    - th-printf-indef
+  verbatim:
+    mixins: >
+      th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text.Lazy)
+        requires (Str as Text.Lazy),
+      th-printf-indef (Language.Haskell.Printf as Language.Haskell.Printf.Text)
+        requires (Str as Text.Strict)
+
+internal-libraries:
+  text-impl:
+    source-dirs: src
+    dependencies:
+      - str-text
+      - text
