@@ -6,9 +6,7 @@ Usage
 -----
 
 ``` haskell
-import Language.Haskell.Printf.Text
--- import Language.Haskell.Printf.Text.Lazy
--- import Language.Haskell.Printf.String
+import Language.Haskell.Printf
 
 -- String interpolation
 [s|Hello, %s!|] "Jeff" -- "Hello, Jeff!"

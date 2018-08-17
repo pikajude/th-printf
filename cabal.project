@@ -1,5 +1,0 @@
-packages: th-printf-indef
-          th-printf-str
-          th-printf-text
-
-allow-newer: *:base, *:template-haskell

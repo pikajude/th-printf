@@ -9,6 +9,7 @@ module Language.Haskell.Printf.Printers where
 
 import Data.Bool
 import Data.Char
+import Data.List
 import Data.String (fromString)
 import Foreign.Ptr
 import GHC.Float (FFFormat(..))
@@ -16,17 +17,16 @@ import Language.Haskell.Printf.Geometry
 import Language.Haskell.PrintfArg
 import NumUtils
 import qualified Parser.Types as P
-import qualified Str as S
 
 type Printer n = PrintfArg n -> Value
 
-printfString :: Printer S.Str
+printfString :: Printer String
 printfString spec =
     Value
         { valArg =
               case prec spec of
                   Nothing -> spec
-                  Just c -> S.take c <$> spec
+                  Just c -> take c <$> spec
         , valPrefix = Nothing
         , valSign = Nothing
         }
@@ -34,9 +34,8 @@ printfString spec =
 printfShow :: Show a => Printer a
 printfShow spec = printfString (fromString . show <$> spec)
 
-printfChar :: Printer S.Chr
-printfChar spec =
-    Value {valArg = S.singleton <$> spec, valPrefix = Nothing, valSign = Nothing}
+printfChar :: Printer Char
+printfChar spec = Value {valArg = pure <$> spec, valPrefix = Nothing, valSign = Nothing}
 
 printfPtr :: Printer (Ptr a)
 printfPtr spec =
@@ -65,8 +64,8 @@ printfDecimal spec =
 
 fmtUnsigned ::
        forall a. (Bounded a, Integral a)
-    => (Integer -> S.Str)
-    -> (PrintfArg a -> Maybe S.Str)
+    => (Integer -> String)
+    -> (PrintfArg a -> Maybe String)
     -> Printer a
 fmtUnsigned shower p spec =
     Value
@@ -94,7 +93,7 @@ printfHex b = fmtUnsigned showHex (prefix (bool "0x" "0X" b))
 printfUnsigned = fmtUnsigned (showIntAtBase 10 intToDigit) (const Nothing)
 
 printfOctal spec
-    | "0" `S.isPrefixOf` value valArg = v
+    | "0" `isPrefixOf` value valArg = v
     | otherwise = v {valPrefix = prefix "0" spec}
   where
     v@Value {..} = fmtUnsigned (showIntAtBase 8 intToDigit) (const Nothing) spec

@@ -1,0 +1,56 @@
+name: th-printf
+version: 0.6.0
+synopsis: Quasiquoters for printf
+description: |
+  Quasiquoters for printf: string, bytestring, text.
+author: Jude Taylor
+maintainer: me@jude.xyz
+tested-with: GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
+category: Text
+github: pikajude/th-printf
+
+ghc-options: -Wall
+
+flags:
+  werror:
+    description: Build with -Werror
+    default:     False
+    manual:      True
+
+when:
+  - condition: flag(werror)
+    ghc-options: -Werror
+
+dependencies:
+  - base == 4.*
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Language.Haskell.Printf
+    - Language.Haskell.Printf.Lib
+  dependencies:
+    - template-haskell
+    - th-printf-parser
+
+internal-libraries:
+  th-printf-parser:
+    source-dirs: parser
+    dependencies:
+      - charset
+      - containers
+      - microlens-platform
+      - mtl
+      - parsec
+      - template-haskell
+
+tests:
+  format:
+    source-dirs: tests
+    main: format.hs
+    dependencies:
+      - HUnit
+      - QuickCheck
+      - hspec
+      - template-haskell
+      - th-printf

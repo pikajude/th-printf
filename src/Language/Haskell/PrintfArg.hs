@@ -3,12 +3,11 @@
 module Language.Haskell.PrintfArg where
 
 import qualified Parser.Types as P
-import Str (Index)
 
 data PrintfArg v = PrintfArg
     { flagSet :: P.FlagSet
-    , width :: Maybe Index
-    , prec :: Maybe Index
+    , width :: Maybe Int
+    , prec :: Maybe Int
     , lengthSpec :: Maybe P.LengthSpecifier
     , fieldSpec :: Char
     , value :: v

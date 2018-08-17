@@ -15,7 +15,6 @@ import Language.Haskell.Printf.Lib
 import Language.Haskell.TH.Lib
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
-import qualified Str as S
 import System.IO (stdout)
 
 -- | @
@@ -73,7 +72,7 @@ p =
         { quoteExp =
               \s' -> do
                   (lhss, rhs) <- toSplices s'
-                  lamE (map pure lhss) [|liftIO (S.hPutStr stdout $(pure rhs))|]
+                  lamE (map pure lhss) [|liftIO (hPutStr stdout $(pure rhs))|]
         }
 
 -- | Like 'p', but takes as its first argument the 'System.IO.Handle' to print to.
@@ -90,7 +89,7 @@ hp =
                   h <- newName "h"
                   lamE
                       (varP h : map pure lhss)
-                      [|liftIO (S.hPutStr $(varE h) $(pure rhs))|]
+                      [|liftIO (hPutStr $(varE h) $(pure rhs))|]
         }
 
 quoter :: QuasiQuoter

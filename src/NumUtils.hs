@@ -15,9 +15,9 @@ import GHC.Base hiding ((<>), foldr)
 import GHC.Float (FFFormat(..), roundTo)
 import Numeric (floatToDigits)
 import Prelude hiding (exp)
-import qualified Str as S
+import StrUtils
 
-showIntAtBase :: (Show a, Integral a) => a -> (Int -> Char) -> a -> S.Str
+showIntAtBase :: (Show a, Integral a) => a -> (Int -> Char) -> a -> String
 showIntAtBase base toChr n0
     | base <= 1 = error "unsupported base"
     | n0 < 0 = error $ "negative number " ++ show n0
@@ -28,23 +28,22 @@ showIntAtBase base toChr n0
             0 -> r'
             _ -> showIt (quotRem n base) r'
       where
-        c = S.chr (toChr (fromIntegral d))
-        r' = S.cons' c r
+        c = id (toChr (fromIntegral d))
+        r' = (:) c r
 
-formatRealFloatAlt :: RealFloat a => FFFormat -> Maybe Int -> Bool -> Bool -> a -> S.Str
+formatRealFloatAlt :: RealFloat a => FFFormat -> Maybe Int -> Bool -> Bool -> a -> String
 formatRealFloatAlt fmt decs forceDot upper x
     | isNaN x = "NaN"
     | isInfinite x =
         if x < 0
             then "-Infinity"
             else "Infinity"
-    | x < 0 || isNegativeZero x =
-        S.cons' (S.chr '-') (doFmt fmt (floatToDigits 10 (-x)) False)
+    | x < 0 || isNegativeZero x = (:) (id '-') (doFmt fmt (floatToDigits 10 (-x)) False)
     | otherwise = doFmt fmt (floatToDigits 10 x) False
   where
     eChar
-        | upper = S.chr 'E'
-        | otherwise = S.chr 'e'
+        | upper = id 'E'
+        | otherwise = id 'e'
     doFmt FFFixed (digs, exp) fullRounding
         | exp < 0 = doFmt FFFixed (replicate (negate exp) 0 ++ digs, 0) fullRounding
         | null part =
@@ -60,20 +59,17 @@ formatRealFloatAlt fmt decs forceDot upper x
     doFmt FFExponent ([0], _) _
         | forceDot = "0.e+00"
         | otherwise = "0e+00"
-    doFmt FFExponent (digs, exp) fullRounding = shownDigs <> S.cons' eChar shownExponent
+    doFmt FFExponent (digs, exp) fullRounding = shownDigs <> (:) eChar shownExponent
       where
         shownDigs =
             case digs' of
                 [] -> undefined
                 [x'] ->
-                    S.singleton (S.chr (intToDigit x')) <>
+                    pure (id (intToDigit x')) <>
                     (if forceDot
                          then "."
                          else "")
-                (x':xs) ->
-                    S.cons'
-                        (S.chr (intToDigit x'))
-                        (S.cons' (S.chr '.') (fromDigits False xs))
+                (x':xs) -> (:) (id (intToDigit x')) ((:) (id '.') (fromDigits False xs))
         digs' =
             case decs of
                 Just n ->
@@ -88,14 +84,14 @@ formatRealFloatAlt fmt decs forceDot upper x
                 Nothing -> digs
         exp' = exp - 1
         shownExponent =
-            S.cons'
-                (S.chr $
+            (:)
+                (id $
                  if exp' < 0
                      then '-'
                      else '+') $
-            S.justifyRight 2 (S.chr '0') $ showIntAtBase 10 intToDigit $ abs exp'
+            justifyRight 2 (id '0') $ showIntAtBase 10 intToDigit $ abs exp'
     doFmt FFGeneric d _ =
-        minimumBy (comparing S.length) [doFmt FFFixed d True, doFmt FFExponent d True]
+        minimumBy (comparing length) [doFmt FFFixed d True, doFmt FFExponent d True]
 
 toRoundedDigits :: Maybe Int -> ([Int], Int) -> Bool -> ([Int], Int)
 toRoundedDigits Nothing (digs, exp) _ = (digs, exp)
@@ -109,32 +105,32 @@ toRoundedDigits (Just prec) (digs, exp) fullRounding = (digs', exp + overflow)
                  else prec + exp)
             digs
 
-fromDigits :: Bool -> [Int] -> S.Str
+fromDigits :: Bool -> [Int] -> String
 fromDigits upper =
     foldr
-        (S.cons' .
-         S.chr .
+        ((:) .
+         id .
          (if upper
               then toUpper
               else id) .
          intToDigit)
-        S.empty
+        []
 
-formatHexFloat :: RealFloat a => Maybe Int -> Bool -> Bool -> a -> S.Str
+formatHexFloat :: RealFloat a => Maybe Int -> Bool -> Bool -> a -> String
 formatHexFloat decs alt upper x = doFmt (floatToDigits 2 x)
   where
     pChar
-        | upper = S.chr 'P'
-        | otherwise = S.chr 'p'
+        | upper = id 'P'
+        | otherwise = id 'p'
     doFmt ([], _) = undefined
-    doFmt ([0], 0) = "0" <> S.singleton pChar <> "+0"
+    doFmt ([0], 0) = "0" <> pure pChar <> "+0"
     doFmt (_:bits, exp) =
         fromString (show (1 + overflow)) <>
         (if not (null hexDigits) || alt
              then "."
              else "") <>
         fromDigits upper hexDigits <>
-        S.singleton pChar <>
+        pure pChar <>
         (if exp > 0
              then "+"
              else "") <>
