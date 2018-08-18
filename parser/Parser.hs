@@ -6,17 +6,16 @@
 
 module Parser where
 
-import qualified Data.Set as S
-
+import Control.Applicative
 import Control.Monad.Fix
 import Control.Monad.RWS
 import Data.Char
 import Data.CharSet hiding (map)
 import Data.Maybe
+import qualified Data.Set as S
 import Lens.Micro.Platform
 import Parser.Types
-import qualified Data.Set as Set
-import Text.Parsec
+import Text.Parsec hiding (many)
 import Text.ParserCombinators.ReadP (readP_to_S)
 import Text.Read.Lex (lexChar)
 
@@ -65,12 +64,12 @@ normalizeAndWarn (Arg f) = (Arg a, b)
     warnSpace = warnFlag spaced_ True False ' '
     warnZero = warnFlag adjustment_ (Just ZeroPadded) Nothing '0'
     phonyLengthSpec =
-        Set.fromList $ [(x, y) | x <- "diuoxX", y <- ["L"]] ++
+        S.fromList $ [(x, y) | x <- "diuoxX", y <- ["L"]] ++
         [(x, y) | x <- "fFeEgGaA", y <- ["hh", "h", "l", "ll", "j", "z", "t"]] ++
         [(x, y) | x <- "cs", y <- ["hh", "h", "ll", "j", "z", "t", "L"]] ++
         map ((,) 'p') ["hh", "h", "l", "ll", "j", "z", "t", "L"]
     warnLength FormatArg {spec, lengthSpec = Just l}
-        | (spec, show l) `Set.member` phonyLengthSpec =
+        | (spec, show l) `S.member` phonyLengthSpec =
             tell
                 [ "`" ++ show l ++ "` length modifier has no effect when combined with `" ++
                   [spec] ++

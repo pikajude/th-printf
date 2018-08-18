@@ -9,15 +9,16 @@ module Language.Haskell.Printf
     , hp
     ) where
 
+import Control.Applicative (pure)
 import Control.Monad.IO.Class
 import Language.Haskell.Printf.Lib
 import Language.Haskell.TH.Lib
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
-import System.IO (stdout, hPutStr)
+import System.IO (hPutStr, stdout)
 
 -- | @
--- ['s'|Hello, %s! (%d people greeted)|] :: ... -> 'S.Str'
+-- ['s'|Hello, %s! (%d people greeted)|] :: ... -> 'String'
 -- @
 --
 -- This formatter follows the guidelines listed
@@ -26,8 +27,8 @@ import System.IO (stdout, hPutStr)
 -- reasons.
 --
 -- @
--- %c     :: 'S.Chr'
--- %s     :: 'S.Str'
+-- %c     :: 'Char'
+-- %s     :: 'String'
 --
 -- -- datatypes with Show instances
 -- %?     :: 'Show' a => a
@@ -86,9 +87,7 @@ hp =
               \s' -> do
                   (lhss, rhs) <- toSplices s'
                   h <- newName "h"
-                  lamE
-                      (varP h : map pure lhss)
-                      [|liftIO (hPutStr $(varE h) $(pure rhs))|]
+                  lamE (varP h : map pure lhss) [|liftIO (hPutStr $(varE h) $(pure rhs))|]
         }
 
 quoter :: QuasiQuoter

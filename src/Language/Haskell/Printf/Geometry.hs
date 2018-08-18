@@ -3,8 +3,10 @@
 
 module Language.Haskell.Printf.Geometry where
 
+import Control.Applicative ((<$>))
 import Control.Monad
 import Data.Maybe
+import Data.Monoid (mempty)
 import Data.Semigroup ((<>))
 import Language.Haskell.PrintfArg
 import Parser.Types (Adjustment(..))

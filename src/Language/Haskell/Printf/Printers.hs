@@ -7,6 +7,7 @@
 
 module Language.Haskell.Printf.Printers where
 
+import Control.Applicative ((<$>), pure)
 import Data.Bool
 import Data.Char
 import Data.List

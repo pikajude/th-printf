@@ -4,6 +4,7 @@ module Language.Haskell.Printf.Lib
     ( toSplices
     ) where
 
+import Control.Applicative ((<$>), pure)
 import Data.Maybe
 import Data.Semigroup ((<>))
 import Data.String (fromString)

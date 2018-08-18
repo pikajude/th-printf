@@ -3,10 +3,12 @@
 
 module Parser.Types where
 
+import Data.Foldable (elem, notElem)
 import qualified Data.Set as S
 import Data.Set (Set)
 import Language.Haskell.TH.Lift
 import Lens.Micro.Platform
+import Prelude hiding (elem, notElem)
 
 data Atom
     = Arg FormatArg

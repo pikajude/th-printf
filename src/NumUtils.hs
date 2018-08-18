@@ -4,6 +4,7 @@
 
 module NumUtils where
 
+import Control.Applicative (pure)
 import Data.Bits
 import Data.Char
 import Data.Foldable
@@ -14,7 +15,7 @@ import Data.Tuple
 import GHC.Base hiding ((<>), foldr)
 import GHC.Float (FFFormat(..), roundTo)
 import Numeric (floatToDigits)
-import Prelude hiding (exp)
+import Prelude hiding (exp, foldr)
 import StrUtils
 
 showIntAtBase :: (Show a, Integral a) => a -> (Int -> Char) -> a -> String
