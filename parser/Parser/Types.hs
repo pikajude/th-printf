@@ -1,18 +1,18 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE DeriveLift #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Parser.Types where
 
 import qualified Data.Set as S
 import Data.Set (Set)
+import Language.Haskell.TH.Lift
 import Language.Haskell.TH.Syntax
 import Lens.Micro.Platform
 
 data Atom
     = Arg FormatArg
     | Str String
-    deriving (Show, Lift)
+    deriving (Show)
 
 data LengthSpecifier
     = DoubleH
@@ -23,7 +23,7 @@ data LengthSpecifier
     | J
     | Z
     | T
-    deriving (Eq, Lift)
+    deriving (Eq)
 
 instance Show LengthSpecifier where
     show DoubleH = "hh"
@@ -49,12 +49,12 @@ adjustmentFlags = S.fromList [FlagLJust, FlagZeroPadded]
 data Adjustment
     = LeftJustified
     | ZeroPadded
-    deriving (Show, Lift, Eq)
+    deriving (Show, Eq)
 
 data MaySpecify
     = Given Integer
     | Need
-    deriving (Show, Lift)
+    deriving (Show)
 
 data FormatArg = FormatArg
     { flags :: FlagSet
@@ -62,7 +62,7 @@ data FormatArg = FormatArg
     , precision :: Maybe MaySpecify
     , spec :: Char
     , lengthSpec :: Maybe LengthSpecifier
-    } deriving (Show, Lift)
+    } deriving (Show)
 
 type FormatStr = [Atom]
 
@@ -71,7 +71,7 @@ data FlagSet = FlagSet
     , signed :: Bool
     , spaced :: Bool
     , prefixed :: Bool
-    } deriving (Show, Lift)
+    } deriving (Show)
 
 emptyFlagSet :: FlagSet
 emptyFlagSet = FlagSet Nothing False False False
@@ -107,3 +107,5 @@ makeLensesFor
     , ("lengthSpec", "lengthSpec_")
     ]
     ''FormatArg
+
+deriveLiftMany [''Adjustment, ''FlagSet, ''LengthSpecifier]

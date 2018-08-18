@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveLift #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -15,7 +14,7 @@ import Language.Haskell.Printf.Lib
 import Language.Haskell.TH.Lib
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
-import System.IO (stdout)
+import System.IO (stdout, hPutStr)
 
 -- | @
 -- ['s'|Hello, %s! (%d people greeted)|] :: ... -> 'S.Str'

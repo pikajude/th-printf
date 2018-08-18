@@ -5,6 +5,7 @@ module Language.Haskell.Printf.Lib
     ) where
 
 import Data.Maybe
+import Data.Semigroup ((<>))
 import Data.String (fromString)
 import Language.Haskell.Printf.Geometry (formatOne)
 import qualified Language.Haskell.Printf.Printers as Printers

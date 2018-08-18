@@ -1,6 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -38,7 +37,7 @@ normalizeAndWarn :: Atom -> (Atom, [Warning])
 normalizeAndWarn s@Str {} = (s, [])
 normalizeAndWarn (Arg f) = (Arg a, b)
   where
-    (_, a, b) = runRWS @_ @[Warning] (warnLength f >> go (spec f)) () f
+    (_, a, b) = runRWS (warnLength f >> go (spec f)) () f
     go c
         | c `elem` "aAeEfFgGxXo" = return ()
     go c
@@ -143,4 +142,4 @@ fmtArg = do
   where
     nat = do
         c <- many1 $ satisfy isDigit
-        return $ read @Integer c
+        return (read c :: Integer)

@@ -5,7 +5,7 @@ description: |
   Quasiquoters for printf: string, bytestring, text.
 author: Jude Taylor
 maintainer: me@jude.xyz
-tested-with: GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
+tested-with: GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
 category: Text
 github: pikajude/th-printf
 
@@ -30,6 +30,8 @@ library:
     - Language.Haskell.Printf
     - Language.Haskell.Printf.Lib
   dependencies:
+    - semigroups
+    - transformers
     - template-haskell
     - th-printf-parser
 
@@ -43,6 +45,7 @@ internal-libraries:
       - mtl
       - parsec
       - template-haskell
+      - th-lift
 
 tests:
   format:
