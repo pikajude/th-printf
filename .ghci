@@ -1,1 +1,1 @@
-:set -ddump-splices -XQuasiQuotes -XOverloadedStrings
+:set -ddump-splices -XQuasiQuotes
