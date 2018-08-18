@@ -1,4 +1,4 @@
-# th-printf [![Hackage](https://img.shields.io/hackage/v/th-printf.svg?style=flat)](https://hackage.haskell.org/package/th-printf)
+# th-printf [![th-printf](https://travis-ci.org/pikajude/th-printf.svg?branch=bkp)](https://travis-ci.org/pikajude/th-printf)
 
 printf QuasiQuoters
 
@@ -6,6 +6,8 @@ Usage
 -----
 
 ``` haskell
+import Language.Haskell.Printf
+
 -- String interpolation
 [s|Hello, %s!|] "Jeff" -- "Hello, Jeff!"
 
