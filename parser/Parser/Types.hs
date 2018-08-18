@@ -6,7 +6,6 @@ module Parser.Types where
 import qualified Data.Set as S
 import Data.Set (Set)
 import Language.Haskell.TH.Lift
-import Language.Haskell.TH.Syntax
 import Lens.Micro.Platform
 
 data Atom

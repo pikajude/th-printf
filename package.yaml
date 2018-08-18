@@ -25,27 +25,20 @@ dependencies:
   - base == 4.*
 
 library:
-  source-dirs: src
+  source-dirs: [src, parser]
   exposed-modules:
     - Language.Haskell.Printf
     - Language.Haskell.Printf.Lib
   dependencies:
+    - charset
+    - containers
+    - microlens-platform
+    - mtl
+    - parsec
     - semigroups
-    - transformers
     - template-haskell
-    - th-printf-parser
-
-internal-libraries:
-  th-printf-parser:
-    source-dirs: parser
-    dependencies:
-      - charset
-      - containers
-      - microlens-platform
-      - mtl
-      - parsec
-      - template-haskell
-      - th-lift
+    - th-lift
+    - transformers
 
 tests:
   format:

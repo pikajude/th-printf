@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wwarn #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main where
@@ -37,4 +38,5 @@ main =
             -- left-pad flag does nothing
             [s|%-15p|] fakePtr @?= "     0xdeadbeef"
 
+fakePtr :: Ptr ()
 fakePtr = nullPtr `plusPtr` 0xdeadbeef

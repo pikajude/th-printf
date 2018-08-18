@@ -1,10 +1,10 @@
-cabal-version: >= 2.0
+cabal-version: >= 1.10
 
 -- This file has been generated from package.yaml by hpack version 0.29.6.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 60dfaaa7806f2b8da0ce0372abc23b56ffc9e009928d58584fb92f0d6488b04d
+-- hash: 02f18fcc2963d061d9c5bff9a6cd352518b69cf49131279a887e54cc33c0ea3e
 
 name:           th-printf
 version:        0.6.0
@@ -39,27 +39,11 @@ library
       Language.Haskell.PrintfArg
       NumUtils
       StrUtils
+      Parser
+      Parser.Types
       Paths_th_printf
   hs-source-dirs:
       src
-  ghc-options: -Wall
-  build-depends:
-      base ==4.*
-    , semigroups
-    , template-haskell
-    , th-printf-parser
-    , transformers
-  if flag(werror)
-    ghc-options: -Werror
-  default-language: Haskell2010
-
-library th-printf-parser
-  exposed-modules:
-      Parser
-      Parser.Types
-  other-modules:
-      Paths_th_printf
-  hs-source-dirs:
       parser
   ghc-options: -Wall
   build-depends:
@@ -69,8 +53,10 @@ library th-printf-parser
     , microlens-platform
     , mtl
     , parsec
+    , semigroups
     , template-haskell
     , th-lift
+    , transformers
   if flag(werror)
     ghc-options: -Werror
   default-language: Haskell2010
