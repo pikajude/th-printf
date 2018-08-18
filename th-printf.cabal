@@ -4,7 +4,7 @@ cabal-version: >= 1.10
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 02f18fcc2963d061d9c5bff9a6cd352518b69cf49131279a887e54cc33c0ea3e
+-- hash: 3bb03e7043db37715e159f1480d571909264569dccb84490d00cbf8144a34e22
 
 name:           th-printf
 version:        0.6.0
@@ -19,6 +19,8 @@ license:        MIT
 license-file:   LICENSE
 tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
 build-type:     Simple
+extra-source-files:
+    CHANGELOG.md
 
 source-repository head
   type: git
