@@ -4,7 +4,7 @@ cabal-version: >= 1.10
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1248b9adddc868f93100723a1658d84a736ce62ef202557a415f4bd0217b99a0
+-- hash: 4101c338336a205adbce54e7e693a080e8489c0f1eabbcf6b0fca0bd1de2de95
 
 name:           th-printf
 version:        0.6.1
@@ -62,6 +62,8 @@ library
   if impl(ghcjs)
     build-depends:
         primitive ==0.6.3.0
+  if flag(werror)
+    ghc-options: -Werror
   default-language: Haskell2010
 
 test-suite format
@@ -83,6 +85,8 @@ test-suite format
   if impl(ghcjs)
     build-depends:
         primitive ==0.6.3.0
+  if flag(werror)
+    ghc-options: -Werror
   if impl(ghcjs)
     build-depends:
         hspec-core ==2.4.8
