@@ -47,13 +47,11 @@ printfPtr spec =
                   , flagSet = P.emptyFlagSet {P.prefixed = True}
                   , lengthSpec = Nothing
                   , fieldSpec = 'p'
-                  , value = showIntAtBase 16 intToDigit (toInt $ value spec)
+                  , value = showIntAtBase 16 intToDigit (ptrToWordPtr $ value spec)
                   }
         , valPrefix = Just "0x"
         , valSign = Nothing
         }
-  where
-    toInt x = x `minusPtr` nullPtr
 
 printfDecimal spec =
     Value

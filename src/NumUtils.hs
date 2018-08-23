@@ -126,7 +126,7 @@ formatHexFloat decs alt upper x = doFmt (floatToDigits 2 x)
     doFmt ([], _) = undefined
     doFmt ([0], 0) = "0" <> pure pChar <> "+0"
     doFmt (_:bits, exp) =
-        fromString (show (1 + overflow)) <>
+        fromString "1" <>
         (if not (null hexDigits) || alt
              then "."
              else "") <>
@@ -135,7 +135,7 @@ formatHexFloat decs alt upper x = doFmt (floatToDigits 2 x)
         (if exp > 0
              then "+"
              else "") <>
-        fromString (show (exp - 1))
+        fromString (show (exp - 1 + overflow))
       where
         hexDigits' = go bits
         (overflow, hexDigits) =

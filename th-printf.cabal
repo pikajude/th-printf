@@ -1,13 +1,13 @@
 cabal-version: >= 1.10
 
--- This file has been generated from package.yaml by hpack version 0.29.6.
+-- This file has been generated from package.yaml by hpack version 0.29.7.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3bb03e7043db37715e159f1480d571909264569dccb84490d00cbf8144a34e22
+-- hash: 1248b9adddc868f93100723a1658d84a736ce62ef202557a415f4bd0217b99a0
 
 name:           th-printf
-version:        0.6.0
+version:        0.6.1
 synopsis:       Quasiquoters for printf
 description:    Quasiquoters for printf: string, bytestring, text.
 category:       Text
@@ -59,8 +59,9 @@ library
     , template-haskell
     , th-lift
     , transformers
-  if flag(werror)
-    ghc-options: -Werror
+  if impl(ghcjs)
+    build-depends:
+        primitive ==0.6.3.0
   default-language: Haskell2010
 
 test-suite format
@@ -79,6 +80,10 @@ test-suite format
     , hspec
     , template-haskell
     , th-printf
-  if flag(werror)
-    ghc-options: -Werror
+  if impl(ghcjs)
+    build-depends:
+        primitive ==0.6.3.0
+  if impl(ghcjs)
+    build-depends:
+        hspec-core ==2.4.8
   default-language: Haskell2010

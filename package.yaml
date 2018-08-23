@@ -1,5 +1,5 @@
 name: th-printf
-version: 0.6.0
+version: 0.6.1
 synopsis: Quasiquoters for printf
 description: |
   Quasiquoters for printf: string, bytestring, text.
@@ -21,6 +21,10 @@ flags:
 when:
   - condition: flag(werror)
     ghc-options: -Werror
+
+when:
+  - condition: impl(ghcjs)
+    dependencies: [primitive == 0.6.3.0]
 
 dependencies:
   - base == 4.*
@@ -51,3 +55,6 @@ tests:
       - hspec
       - template-haskell
       - th-printf
+    when:
+      - condition: impl(ghcjs)
+        dependencies: [hspec-core == 2.4.8]
