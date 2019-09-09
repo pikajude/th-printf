@@ -27,6 +27,11 @@ when:
 dependencies:
   - base == 4.*
 
+custom-setup:
+  dependencies:
+    - Cabal == 2.4.*
+    - base
+
 library:
   source-dirs: [src, parser]
   exposed-modules:

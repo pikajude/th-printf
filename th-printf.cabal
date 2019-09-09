@@ -1,10 +1,10 @@
-cabal-version: >= 1.10
+cabal-version: 1.24
 
--- This file has been generated from package.yaml by hpack version 0.29.7.
+-- This file has been generated from package.yaml by hpack version 0.32.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4101c338336a205adbce54e7e693a080e8489c0f1eabbcf6b0fca0bd1de2de95
+-- hash: 717c8fe356f618c029e59a60eee70dc717ec8496164fa06a6ef7b5eec638e537
 
 name:           th-printf
 version:        0.6.1
@@ -18,13 +18,18 @@ maintainer:     me@jude.xyz
 license:        MIT
 license-file:   LICENSE
 tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
-build-type:     Simple
+build-type:     Custom
 extra-source-files:
     CHANGELOG.md
 
 source-repository head
   type: git
   location: https://github.com/pikajude/th-printf
+
+custom-setup
+  setup-depends:
+      Cabal ==2.4.*
+    , base
 
 flag werror
   description: Build with -Werror

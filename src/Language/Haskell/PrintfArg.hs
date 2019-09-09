@@ -2,7 +2,7 @@
 
 module Language.Haskell.PrintfArg where
 
-import qualified Parser.Types as P
+import qualified Parser.Types                  as P
 
 data PrintfArg v = PrintfArg
     { flagSet :: P.FlagSet

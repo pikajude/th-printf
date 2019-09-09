@@ -4,18 +4,19 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.Haskell.Printf
-    ( s
-    , p
-    , hp
-    ) where
+  ( s
+  , p
+  , hp
+  )
+where
 
-import Control.Applicative (pure)
-import Control.Monad.IO.Class
-import Language.Haskell.Printf.Lib
-import Language.Haskell.TH.Lib
-import Language.Haskell.TH.Quote
-import Language.Haskell.TH.Syntax
-import System.IO (hPutStr, stdout)
+import           Control.Applicative            ( pure )
+import           Control.Monad.IO.Class
+import           Language.Haskell.Printf.Lib
+import           Language.Haskell.TH.Lib
+import           Language.Haskell.TH.Quote
+import           Language.Haskell.TH.Syntax
+import           System.IO                      ( hPutStr )
 
 -- | @
 -- ['s'|Hello, %s! (%d people greeted)|] :: ... -> 'String'
@@ -53,13 +54,11 @@ import System.IO (hPutStr, stdout)
 -- N.B.: For consistency with other @printf@ implementations, arguments formatted as
 -- unsigned integer types will \"underflow\" if negative.
 s :: QuasiQuoter
-s =
-    quoter
-        { quoteExp =
-              \s' -> do
-                  (lhss, rhs) <- toSplices s'
-                  return $ LamE lhss rhs
-        }
+s = quoter
+  { quoteExp = \s' -> do
+                 (lhss, rhs) <- toSplices s'
+                 return $ LamE lhss rhs
+  }
 
 -- | Like 's', but prints the resulting string to @stdout@.
 --
@@ -67,13 +66,11 @@ s =
 -- [p|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => ... -> m ()
 -- @
 p :: QuasiQuoter
-p =
-    quoter
-        { quoteExp =
-              \s' -> do
-                  (lhss, rhs) <- toSplices s'
-                  lamE (map pure lhss) [|liftIO (hPutStr stdout $(pure rhs))|]
-        }
+p = quoter
+  { quoteExp = \s' -> do
+                 (lhss, rhs) <- toSplices s'
+                 lamE (map pure lhss) [|liftIO (putStr $(pure rhs))|]
+  }
 
 -- | Like 'p', but takes as its first argument the 'System.IO.Handle' to print to.
 --
@@ -81,20 +78,18 @@ p =
 -- [hp|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => 'System.IO.Handle' -> ... -> m ()
 -- @
 hp :: QuasiQuoter
-hp =
-    quoter
-        { quoteExp =
-              \s' -> do
-                  (lhss, rhs) <- toSplices s'
-                  h <- newName "h"
-                  lamE (varP h : map pure lhss) [|liftIO (hPutStr $(varE h) $(pure rhs))|]
-        }
+hp = quoter
+  { quoteExp =
+    \s' -> do
+      (lhss, rhs) <- toSplices s'
+      h           <- newName "h"
+      lamE (varP h : map pure lhss) [|liftIO (hPutStr $(varE h) $(pure rhs))|]
+  }
 
 quoter :: QuasiQuoter
-quoter =
-    QuasiQuoter
-        { quoteExp = undefined
-        , quotePat = error "this quoter cannot be used in a pattern context"
-        , quoteType = error "this quoter cannot be used in a type context"
-        , quoteDec = error "this quoter cannot be used in a declaration context"
-        }
+quoter = QuasiQuoter
+  { quoteExp  = undefined
+  , quotePat  = error "this quoter cannot be used in a pattern context"
+  , quoteType = error "this quoter cannot be used in a type context"
+  , quoteDec  = error "this quoter cannot be used in a declaration context"
+  }
