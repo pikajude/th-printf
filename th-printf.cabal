@@ -1,13 +1,13 @@
-cabal-version: 1.24
+cabal-version: 1.12
 
 -- This file has been generated from package.yaml by hpack version 0.32.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 717c8fe356f618c029e59a60eee70dc717ec8496164fa06a6ef7b5eec638e537
+-- hash: 6d12c4c50adbd12f0a3f4f20f70df4a78c03289f75fcf3c01ed7a2ae2be65bba
 
 name:           th-printf
-version:        0.6.1
+version:        0.7
 synopsis:       Quasiquoters for printf
 description:    Quasiquoters for printf: string, bytestring, text.
 category:       Text
@@ -17,19 +17,14 @@ author:         Jude Taylor
 maintainer:     me@jude.xyz
 license:        MIT
 license-file:   LICENSE
-tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
-build-type:     Custom
+tested-with:    GHC == 8.4.4, GHC == 8.6.5
+build-type:     Simple
 extra-source-files:
     CHANGELOG.md
 
 source-repository head
   type: git
   location: https://github.com/pikajude/th-printf
-
-custom-setup
-  setup-depends:
-      Cabal ==2.4.*
-    , base
 
 flag werror
   description: Build with -Werror
@@ -41,6 +36,7 @@ library
       Language.Haskell.Printf
       Language.Haskell.Printf.Lib
   other-modules:
+      Buildable
       Language.Haskell.Printf.Geometry
       Language.Haskell.Printf.Printers
       Language.Haskell.PrintfArg
@@ -57,11 +53,14 @@ library
       base ==4.*
     , charset
     , containers
+    , dlist
+    , integer-logarithms
     , microlens-platform
     , mtl
     , parsec
     , semigroups
     , template-haskell
+    , text
     , th-lift
     , transformers
   if impl(ghcjs)

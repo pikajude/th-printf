@@ -4,7 +4,9 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.Haskell.Printf
-  ( s
+  ( -- $intro
+    s
+  , t
   , p
   , hp
   )
@@ -50,15 +52,16 @@ import           System.IO                      ( hPutStr )
 --
 -- %p     :: 'Foreign.Ptr.Ptr' a
 -- @
---
--- N.B.: For consistency with other @printf@ implementations, arguments formatted as
--- unsigned integer types will \"underflow\" if negative.
 s :: QuasiQuoter
-s = quoter
-  { quoteExp = \s' -> do
-                 (lhss, rhs) <- toSplices s'
-                 return $ LamE lhss rhs
-  }
+s = quoter $ \s' -> do
+  (lhss, rhs) <- toSplices s' OutputString
+  return $ LamE lhss rhs
+
+-- | Behaves identically to 's', but produces lazy 'Data.Text.Lazy.Text'.
+t :: QuasiQuoter
+t = quoter $ \s' -> do
+  (lhss, rhs) <- toSplices s' OutputText
+  return $ LamE lhss rhs
 
 -- | Like 's', but prints the resulting string to @stdout@.
 --
@@ -66,11 +69,9 @@ s = quoter
 -- [p|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => ... -> m ()
 -- @
 p :: QuasiQuoter
-p = quoter
-  { quoteExp = \s' -> do
-                 (lhss, rhs) <- toSplices s'
-                 lamE (map pure lhss) [|liftIO (putStr $(pure rhs))|]
-  }
+p = quoter $ \s' -> do
+  (lhss, rhs) <- toSplices s' OutputString
+  lamE (map pure lhss) [|liftIO (putStr $(pure rhs))|]
 
 -- | Like 'p', but takes as its first argument the 'System.IO.Handle' to print to.
 --
@@ -78,18 +79,29 @@ p = quoter
 -- [hp|Hello, %s! (%d people greeted)|] :: 'MonadIO' m => 'System.IO.Handle' -> ... -> m ()
 -- @
 hp :: QuasiQuoter
-hp = quoter
-  { quoteExp =
-    \s' -> do
-      (lhss, rhs) <- toSplices s'
-      h           <- newName "h"
-      lamE (varP h : map pure lhss) [|liftIO (hPutStr $(varE h) $(pure rhs))|]
-  }
+hp = quoter $ \s' -> do
+  (lhss, rhs) <- toSplices s' OutputString
+  h           <- newName "h"
+  lamE (varP h : map pure lhss) [|liftIO (hPutStr $(varE h) $(pure rhs))|]
 
-quoter :: QuasiQuoter
-quoter = QuasiQuoter
-  { quoteExp  = undefined
+quoter :: (String -> ExpQ) -> QuasiQuoter
+quoter e = QuasiQuoter
+  { quoteExp  = e
   , quotePat  = error "this quoter cannot be used in a pattern context"
   , quoteType = error "this quoter cannot be used in a type context"
   , quoteDec  = error "this quoter cannot be used in a declaration context"
   }
+
+-- $intro
+-- "Text.Printf" is a useful module, but due to the typeclass hacks it uses, it can
+-- be hard to tell if the format string you wrote is well-formed or not.
+-- This package provides a mechanism to create formatting functions at compile time.
+--
+-- Note that, to maintain consistency with other printf implementations, negative ints
+-- that are printed as unsigned will \"underflow\".
+--
+-- >>> [s|%u|] (-1 :: Int32)
+-- "4294967295"
+--
+-- Thus, any time you want to print a number using the unsigned, octal, or hex specifiers,
+-- your input must be an instance of "Bounded".

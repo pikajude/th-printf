@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -71,7 +72,7 @@ normalizeAndWarn (Arg f) = (Arg a, b)
          , y <- ["hh", "h", "l", "ll", "j", "z", "t"]
          ]
       ++ [ (x, y) | x <- "cs", y <- ["hh", "h", "ll", "j", "z", "t", "L"] ]
-      ++ map ((,) 'p') ["hh", "h", "l", "ll", "j", "z", "t", "L"]
+      ++ map ('p', ) ["hh", "h", "l", "ll", "j", "z", "t", "L"]
   warnLength FormatArg { spec, lengthSpec = Just l }
     | (spec, show l) `S.member` phonyLengthSpec = tell
       [ "`"

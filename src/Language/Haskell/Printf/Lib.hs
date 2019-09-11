@@ -1,8 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Language.Haskell.Printf.Lib
   ( toSplices
+  , OutputType (..)
   )
 where
 
@@ -19,10 +21,18 @@ import qualified Language.Haskell.Printf.Printers
 import           Language.Haskell.PrintfArg
 import           Language.Haskell.TH
 import           Language.Haskell.TH.Syntax
+import           GHC.Generics                   ( Generic )
 import           Parser                         ( parseStr )
 import           Parser.Types            hiding ( lengthSpec
                                                 , width
                                                 )
+
+import           Buildable                      ( finalize
+                                                , SizedList
+                                                , SizedBuilder
+                                                )
+
+data OutputType = OutputString | OutputText deriving (Show, Eq, Ord, Generic, Enum, Bounded)
 
 -- | Takes a format string as input and produces a tuple @(args, outputExpr)@.
 --
@@ -32,14 +42,20 @@ import           Parser.Types            hiding ( lengthSpec
 --
 -- Use if you wish to leverage @th-printf@ in conjunction with, for example, an existing
 -- logging library.
-toSplices :: String -> Q ([Pat], Exp)
-toSplices s' = case parseStr s' of
+toSplices :: String -> OutputType -> Q ([Pat], Exp)
+toSplices s' ot = case parseStr s' of
   Left  x          -> fail $ show x
   Right (y, warns) -> do
     mapM_ (qReport False) (concat warns)
     (lhss, rhss) <- unzip <$> mapM extractExpr y
-    rhss'        <- foldr1 (\x y' -> infixApp x [|(<>)|] y') rhss
+    rhss'        <- appE
+      [|finalize|]
+      (sigE (foldr1 (\x y' -> infixApp x [|(<>)|] y') rhss) otype)
     return (map VarP $ concat lhss, rhss')
+  where
+    otype = case ot of
+      OutputString -> [t|SizedList Char|]
+      OutputText -> [t|SizedBuilder|]
 
 extractExpr :: Atom -> Q ([Name], ExpQ)
 extractExpr (Str s') = return ([], [|fromString $(stringE s')|])

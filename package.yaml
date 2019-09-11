@@ -1,11 +1,11 @@
 name: th-printf
-version: 0.6.1
+version: 0.7
 synopsis: Quasiquoters for printf
 description: |
   Quasiquoters for printf: string, bytestring, text.
 author: Jude Taylor
 maintainer: me@jude.xyz
-tested-with: GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
+tested-with: GHC == 8.4.4, GHC == 8.6.5
 extra-source-files: CHANGELOG.md
 category: Text
 github: pikajude/th-printf
@@ -27,11 +27,6 @@ when:
 dependencies:
   - base == 4.*
 
-custom-setup:
-  dependencies:
-    - Cabal == 2.4.*
-    - base
-
 library:
   source-dirs: [src, parser]
   exposed-modules:
@@ -47,6 +42,9 @@ library:
     - template-haskell
     - th-lift
     - transformers
+    - text
+    - dlist
+    - integer-logarithms
 
 tests:
   format:

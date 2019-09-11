@@ -1,44 +1,47 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.Haskell.Printf.Printers where
 
-import           Control.Applicative            ( (<$>)
-                                                , pure
-                                                )
+import           Control.Applicative            ( (<$>) )
 import           Data.Char
-import           Data.List
 import           Data.String                    ( fromString )
+import           Data.Maybe                     ( fromMaybe )
 import           Foreign.Ptr
 import           GHC.Float                      ( FFFormat(..) )
 import           Language.Haskell.Printf.Geometry
 import           Language.Haskell.PrintfArg
+import           Math.NumberTheory.Logarithms
+
 import           NumUtils
 import qualified Parser.Types                  as P
+import qualified Buildable                     as B
 
-type Printer n = PrintfArg n -> Value
+type Printer n buf = PrintfArg n -> Value buf
 
-printfString :: Printer String
+printfString :: B.Buildable buf => Printer String buf
 printfString spec = Value
   { valArg    = case prec spec of
-                  Nothing -> spec
-                  Just c  -> take c <$> spec
+                  Nothing -> B.str <$> spec
+                  Just c  -> B.str . take c <$> spec
   , valPrefix = Nothing
   , valSign   = Nothing
   }
 
-printfShow :: Show a => Printer a
+printfShow :: (B.Buildable buf, Show a) => Printer a buf
 printfShow spec = printfString (fromString . show <$> spec)
 
-printfChar :: Printer Char
-printfChar spec =
-  Value { valArg = pure <$> spec, valPrefix = Nothing, valSign = Nothing }
+printfChar :: B.Buildable buf => Printer Char buf
+printfChar spec = Value { valArg    = B.singleton <$> spec
+                        , valPrefix = Nothing
+                        , valSign   = Nothing
+                        }
 
 {-# ANN printfPtr ("HLint: ignore Use showHex" :: String) #-}
-printfPtr :: Printer (Ptr a)
+printfPtr :: B.Buildable buf => Printer (Ptr a) buf
 printfPtr spec = Value
   { valArg    = PrintfArg
                   { width      = width spec
@@ -48,7 +51,7 @@ printfPtr spec = Value
                   , fieldSpec  = 'p'
                   , value = showIntAtBase 16 intToDigit (ptrToWordPtr $ value spec)
                   }
-  , valPrefix = Just "0x"
+  , valPrefix = Just (B.str "0x")
   , valSign   = Nothing
   }
 
@@ -59,32 +62,49 @@ printfDecimal spec = Value
   }
 
 fmtUnsigned
-  :: forall a
-   . (Bounded a, Integral a)
-  => (Integer -> String)
-  -> (PrintfArg a -> Maybe String)
-  -> Printer a
+  :: (Bounded a, Integral a, B.Buildable buf)
+  => (Integer -> buf)
+  -> (PrintfArg a -> Maybe buf)
+  -> Printer a buf
 fmtUnsigned shower p spec = Value
-  { valArg    = padDecimal spec . shower . clamp <$> spec
+  { valArg    = padDecimal spec . shower . clampUnsigned <$> spec
   , valPrefix = p spec
   , valSign   = Nothing
   }
- where
-  lb = minBound :: a
-  clamp :: a -> Integer
-  clamp x | x < 0     = toInteger x + (-2 * toInteger lb)
-          | otherwise = toInteger x
 
 printfHex b = fmtUnsigned showHex (prefix (if b then "0X" else "0x"))
   where showHex = showIntAtBase 16 ((if b then toUpper else id) . intToDigit)
 
 printfUnsigned = fmtUnsigned (showIntAtBase 10 intToDigit) (const Nothing)
 
+-- printing octal is really annoying.  consider
+--
+-- printf "%#-8.5x" 1234
+--
+-- "0x004d2 "
+--  ^~~~~~~^ width (8)
+--    ^~~~^  precision (5)
+--  ^^       prefix (2)
+--    ^^     padding (2)
+--
+-- printf "%#-8.5o" 1234
+--
+-- "02322   "
+--  ^~~~~~~^ width (8)
+--  ^~~~^    precision (5)
+--  ^        prefix (1)
+--  ^        padding (1, same character)
+--
+-- in octal, when combining prefix and padding, the prefix
+-- must eat the first padding char
 {-# ANN printfOctal ("HLint: ignore Use showOct" :: String) #-}
-printfOctal spec | "0" `isPrefixOf` value valArg = v
-                 | otherwise = v { valPrefix = prefix "0" spec }
+printfOctal spec = fmtUnsigned
+  (showIntAtBase 8 intToDigit)
+  (\y -> if shouldUnpad then Nothing else prefix "0" y)
+  spec
  where
-  v@Value {..} = fmtUnsigned (showIntAtBase 8 intToDigit) (const Nothing) spec
+  expectedWidth = integerLogBase 8 (max 1 $ clampUnsigned $ value spec) + 1
+  shouldUnpad   = prefixed spec && fromMaybe 0 (prec spec) > expectedWidth
 
 printfFloating upperFlag spec = Value { valArg    = showFloat . abs <$> spec
                                       , valPrefix = Nothing
@@ -125,3 +145,7 @@ printfFloatHex upperFlag spec = Value
  where
   showHexFloat =
     formatHexFloat (fromIntegral <$> prec spec) (prefixed spec) upperFlag
+
+clampUnsigned :: (Bounded a, Integral a) => a -> Integer
+clampUnsigned x | x < 0 = toInteger x + (-2 * toInteger (minBound `asTypeOf` x))
+                | otherwise = toInteger x

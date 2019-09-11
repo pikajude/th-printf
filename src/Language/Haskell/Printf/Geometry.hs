@@ -10,41 +10,44 @@ import           Data.Monoid                    ( mempty )
 import           Data.Semigroup                 ( (<>) )
 import           Language.Haskell.PrintfArg
 import           Parser.Types                   ( Adjustment(..) )
+
+import qualified Buildable                     as B
 import           StrUtils
 
-data Value = Value
-    { valArg :: PrintfArg String
-    , valPrefix :: Maybe String
-    , valSign :: Maybe String
+data Value buf = Value
+    { valArg :: PrintfArg buf
+    , valPrefix :: Maybe buf
+    , valSign :: Maybe buf
     } deriving (Show)
 
-sign' :: (Num n, Ord n) => PrintfArg n -> Maybe String
-sign' pf | value pf < 0 = Just "-"
-         | spaced pf    = Just " "
-         | signed pf    = Just "+"
+sign' :: (Num n, Ord n, B.Buildable buf) => PrintfArg n -> Maybe buf
+sign' pf | value pf < 0 = Just (B.singleton '-')
+         | spaced pf    = Just (B.singleton ' ')
+         | signed pf    = Just (B.singleton '+')
          | otherwise    = Nothing
 
-padDecimal :: (Eq v, Num v) => PrintfArg v -> String -> String
-padDecimal spec | prec spec == Just 0 && value spec == 0 = const ""
+padDecimal :: (B.Buildable buf, Eq v, Num v) => PrintfArg v -> buf -> buf
+padDecimal spec | prec spec == Just 0 && value spec == 0 = const mempty
                 | otherwise = maybe id (`justifyRight` '0') (prec spec)
 
-prefix :: (Num n, Eq n) => String -> PrintfArg n -> Maybe String
+prefix :: (Num n, Eq n, B.Buildable buf) => buf -> PrintfArg n -> Maybe buf
 prefix s pf = guard (prefixed pf && value pf /= 0) >> Just s
 
 fromPrintfArg
-  :: (n -> String)
-  -> (PrintfArg n -> Maybe String)
-  -> (PrintfArg n -> Maybe String)
+  :: B.Buildable buf
+  => (n -> buf)
+  -> (PrintfArg n -> Maybe buf)
+  -> (PrintfArg n -> Maybe buf)
   -> PrintfArg n
-  -> Value
+  -> Value buf
 fromPrintfArg f b c a = Value (f <$> a) (b a) (c a)
 
-formatOne :: Value -> String
+formatOne :: B.Buildable buf => Value buf -> buf
 formatOne Value {..}
   | Nothing <- width valArg = prefix' <> text
   | Just w <- width valArg = case adjustment valArg of
     Just ZeroPadded | isn'tDecimal || isNothing (prec valArg) ->
-      prefix' <> justifyRight (w - length prefix') '0' text
+      prefix' <> justifyRight (w - B.size prefix') '0' text
     Just LeftJustified -> justifyLeft w ' ' (prefix' <> text)
     _                  -> justify' w (prefix' <> text)
   | otherwise = error "unreachable"

@@ -1,11 +1,13 @@
 module StrUtils where
 
-justifyLeft :: Int -> Char -> String -> String
-justifyLeft n c s | diff <= 0 = s
-                  | otherwise = s ++ replicate diff c
-  where diff = n - length s
+import           Buildable
 
-justifyRight :: Int -> Char -> String -> String
+justifyLeft :: Buildable a => Int -> Char -> a -> a
+justifyLeft n c s | diff <= 0 = s
+                  | otherwise = s <> repeatN diff c
+  where diff = n - size s
+
+justifyRight :: Buildable a => Int -> Char -> a -> a
 justifyRight n c s | diff <= 0 = s
-                   | otherwise = replicate diff c ++ s
-  where diff = n - length s
+                   | otherwise = repeatN diff c <> s
+  where diff = n - size s
