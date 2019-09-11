@@ -4,12 +4,12 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6d12c4c50adbd12f0a3f4f20f70df4a78c03289f75fcf3c01ed7a2ae2be65bba
+-- hash: 15546cb829329affbc26fc03686b1a7fa25e850f002edb911f883181576f7773
 
 name:           th-printf
 version:        0.7
 synopsis:       Quasiquoters for printf
-description:    Quasiquoters for printf: string, bytestring, text.
+description:    Quasiquoters for string and text printf
 category:       Text
 homepage:       https://github.com/pikajude/th-printf#readme
 bug-reports:    https://github.com/pikajude/th-printf/issues
@@ -17,7 +17,7 @@ author:         Jude Taylor
 maintainer:     me@jude.xyz
 license:        MIT
 license-file:   LICENSE
-tested-with:    GHC == 8.4.4, GHC == 8.6.5
+tested-with:    GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
 build-type:     Simple
 extra-source-files:
     CHANGELOG.md
