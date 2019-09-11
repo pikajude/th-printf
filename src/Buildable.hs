@@ -15,8 +15,8 @@ newtype Sized a = Sized { unSized :: (a, Int) } deriving (Show, Ord, Eq)
 type SizedList a = Sized (D.DList a)
 type SizedBuilder = Sized T.Builder
 
--- instance IsString a => IsString (Sized a) where
---   str s = Sized (str s, length s)
+instance IsString a => IsString (Sized a) where
+  fromString s = Sized (fromString s, length s)
 
 instance Semigroup a => Semigroup (Sized a) where
   Sized (a, b) <> Sized (c, d) = Sized (a <> c, b + d)
