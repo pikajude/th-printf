@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5d3e22b23ee2995ec959f990578581e17794c1a5c1c353294f5769c3195700aa
+-- hash: 00b88080ef4e2d333fe45cfd4b633d67a16793f89e599cef472081c9a212a38a
 
 name:           th-printf
 version:        0.7
@@ -21,6 +21,7 @@ tested-with:    GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
 build-type:     Simple
 extra-source-files:
     CHANGELOG.md
+    include/compat-defs.h
 
 source-repository head
   type: git
