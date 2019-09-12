@@ -1,4 +1,4 @@
-## 0.7.0 (2019-09-11)
+## 0.7.0 (2019-09-12)
 
 * New `%Q` and `%q` format specifiers accept strict and lazy Text as input
   respectively. Otherwise they function identically to the `%s` specifier.
