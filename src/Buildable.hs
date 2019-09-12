@@ -9,6 +9,7 @@ import           Data.Char                      ( intToDigit )
 import           Data.Text.Lazy                 ( Text )
 import qualified Data.Text.Lazy.Builder        as T
 import qualified Data.Text.Lazy.Builder.Int    as T
+import           Data.Semigroup                 ( Semigroup )
 
 newtype Sized a = Sized { unSized :: (a, Int) } deriving (Show, Ord, Eq)
 
