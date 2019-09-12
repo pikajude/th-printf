@@ -11,6 +11,9 @@ import Language.Haskell.Printf
 -- String interpolation
 [s|Hello, %s!|] "Jeff" -- "Hello, Jeff!"
 
+-- Text interpolation
+[s|Hello, %q!|] (Data.Text.Lazy.pack "Jeff") -- "Hello, Jeff!"
+
 -- Width specifiers
 [s|%010d|] 1977 -- "0000001977"
 

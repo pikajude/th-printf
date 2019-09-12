@@ -7,4 +7,6 @@ argv=( "${argv[@]/\'/\'\\\'\'}" )
 argv=( "${argv[@]/#/\'}" )
 argv=( "${argv[@]/%/\'}" )
 
+export HIE=1
+
 exec nix-shell --run "hie ${argv[*]}"

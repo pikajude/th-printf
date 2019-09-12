@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3e893fb6a8f65fe1020b2b8213ee7d6ff06d9918f1c6ddc470ef43de6bbb4aaf
+-- hash: 62c8df7d3174235654f8edabd47054d66b3551339b9b409b40da4d405dd12733
 
 name:           th-printf
 version:        0.7
@@ -17,7 +17,7 @@ author:         Jude Taylor
 maintainer:     me@jude.xyz
 license:        MIT
 license-file:   LICENSE
-tested-with:    GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
+tested-with:    GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
 build-type:     Simple
 extra-source-files:
     CHANGELOG.md
