@@ -59,6 +59,7 @@ tests:
       - hspec
       - template-haskell
       - th-printf
+      - text
     when:
       - condition: impl(ghcjs)
         dependencies: [hspec-core == 2.4.8]

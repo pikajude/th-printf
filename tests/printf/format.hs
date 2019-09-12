@@ -8,12 +8,17 @@ import           GeneratedSpec
 import           Language.Haskell.Printf
 import           Test.HUnit
 import           Test.Hspec
+import qualified Data.Text                     as S
+import qualified Data.Text.Lazy                as L
 
 main :: IO ()
 main = hspec $ describe "th-printf" $ do
   GeneratedSpec.spec
   it "text" $ do
-    [s|%t|] "Hello, world" @?= "Hello, world"
+    -- sanity checking that text can be rendered
+    -- all the actual string formatting is in GeneratedSpec
+    [s|Hello, %Q!|] (S.pack "world") @?= "Hello, world!"
+    [s|Hello, %q!|] (L.pack "world") @?= "Hello, world!"
   it "hexadecimal float" $ do
     [s|%a|] 0.857421875 @?= "0x1.b7p-1"
     [s|%A|] 3.1415926 @?= "0X1.921FB4D12D84AP+1"

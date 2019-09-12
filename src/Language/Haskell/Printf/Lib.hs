@@ -22,17 +22,18 @@ import           Language.Haskell.PrintfArg
 import           Language.Haskell.TH
 import           Language.Haskell.TH.Syntax
 import           GHC.Generics                   ( Generic )
+
 import           Parser                         ( parseStr )
 import           Parser.Types            hiding ( lengthSpec
                                                 , width
                                                 )
-
 import           Buildable                      ( finalize
                                                 , SizedStr
                                                 , SizedBuilder
                                                 )
 
-data OutputType = OutputString | OutputText deriving (Show, Eq, Ord, Generic, Enum, Bounded)
+data OutputType = OutputString | OutputText
+  deriving (Show, Eq, Ord, Generic, Enum, Bounded)
 
 -- | Takes a format string as input and produces a tuple @(args, outputExpr)@.
 --

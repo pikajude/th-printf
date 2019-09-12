@@ -11,9 +11,7 @@ import Language.Haskell.Printf
 import Test.HUnit
 import Test.Hspec
 
--- XXX This code generated automatically by gen-testcases.hs
--- from ../../printf-tests.txt . You probably do not want to
--- manually edit this file.
+spec :: Spec
 spec = do
     it "test-case #1" $ [s|%.*f|] (2 :: Int32) (0.33333333 :: Double) @?= "0.33"
     it "test-case #2" $ [s|%.3s|] "foobar" @?= "foo"

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e0a5f4f766b7ef79de7d79f84d66313979a41e6bd5d932d37739e53eea702975
+-- hash: a5a1f62065c830723348fc45cac51c87115686a5833a3c444ae35e6ffc35f59a
 
 name:           th-printf
 version:        0.7
@@ -88,6 +88,7 @@ test-suite format
     , base ==4.*
     , hspec
     , template-haskell
+    , text
     , th-printf
   if impl(ghcjs)
     build-depends:
