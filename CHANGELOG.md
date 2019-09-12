@@ -1,9 +1,11 @@
 ## 0.7.0 (2019-09-11)
 
-* New %Q and %q format specifiers accept strict and lazy Text as input
-  respectively. Otherwise they function identically to the %s specifier.
+* New `%Q` and `%q` format specifiers accept strict and lazy Text as input
+  respectively. Otherwise they function identically to the `%s` specifier.
 * th-printf can now produce lazy Text as well as String, and the improved
   internal representation of format strings should slightly increase performance.
+  * Directly producing Text should now be significantly faster than using the 
+    string formatter and `pack`ing the result, especially with Text format arguments.
 * Dropped support for GHC < 8.2. It may still build with 8.0 but I'm no longer
   testing this library with that compiler version.
 
