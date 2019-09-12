@@ -9,7 +9,7 @@ import           Data.Char                      ( intToDigit )
 import           Data.Text.Lazy                 ( Text )
 import qualified Data.Text.Lazy.Builder        as T
 import qualified Data.Text.Lazy.Builder.Int    as T
-import           Data.Semigroup                 ( Semigroup )
+import           Data.Semigroup                 ( Semigroup(..) )
 
 newtype Sized a = Sized { unSized :: (a, Int) } deriving (Show, Ord, Eq)
 
@@ -22,10 +22,11 @@ instance IsString a => IsString (Sized a) where
 instance Semigroup a => Semigroup (Sized a) where
   Sized (a, b) <> Sized (c, d) = Sized (a <> c, b + d)
 
-instance Monoid a => Monoid (Sized a) where
-  mempty = Sized (mempty, 0)
+instance MONOID_HEAD => Monoid (Sized a) where
+  mempty  = Sized (mempty, 0)
+  mappend = (<>)
 
-class Monoid a => Buildable a where
+class MONOID_HEAD => Buildable a where
   type Output a :: *
 
   str :: String -> a

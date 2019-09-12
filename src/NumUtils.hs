@@ -9,15 +9,13 @@ import           Data.Foldable
 import           Data.Ord
 import           Data.Semigroup                 ( (<>) )
 import           Data.Tuple
-import           GHC.Base                hiding ( (<>)
-                                                , foldr
-                                                )
 import           GHC.Float                      ( FFFormat(..)
                                                 , roundTo
                                                 )
 import           Numeric                        ( floatToDigits )
 import           Prelude                 hiding ( exp
                                                 , foldr
+                                                , (<>)
                                                 )
 
 import qualified Buildable                     as B

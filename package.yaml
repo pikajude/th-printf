@@ -44,6 +44,8 @@ library:
     - text
     - dlist
     - integer-logarithms
+  cpp-options: -include include/compat-defs.h
+  default-extensions: CPP
 
 tests:
   format:

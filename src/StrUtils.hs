@@ -1,5 +1,6 @@
 module StrUtils where
 
+import           Data.Semigroup                 ( (<>) )
 import           Buildable
 
 justifyLeft :: Buildable a => Int -> Char -> a -> a

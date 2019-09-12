@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 15546cb829329affbc26fc03686b1a7fa25e850f002edb911f883181576f7773
+-- hash: 5d3e22b23ee2995ec959f990578581e17794c1a5c1c353294f5769c3195700aa
 
 name:           th-printf
 version:        0.7
@@ -48,7 +48,9 @@ library
   hs-source-dirs:
       src
       parser
+  default-extensions: CPP
   ghc-options: -Wall
+  cpp-options: -include include/compat-defs.h
   build-depends:
       base ==4.*
     , charset
