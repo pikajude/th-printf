@@ -6,8 +6,7 @@
   internal representation of format strings should slightly increase performance.
   * Directly producing Text should now be significantly faster than using the 
     string formatter and `pack`ing the result, especially with Text format arguments.
-* Dropped support for GHC < 8.2. It may still build with 8.0 but I'm no longer
-  testing this library with that compiler version.
+* Dropped support for GHC < 8.
 
 ## 0.6.0 (2018-08-18)
 
