@@ -1,9 +1,9 @@
 ## 0.7.0 (2019-09-11)
 
-Clarifying 0.6.0's note: this package doesn't use backpack
-
-* th-printf can now use different types of builder as long as they implement
-  Buildable. As a result, th-printf can now produce lazy Text as well as String.
+* New %Q and %q format specifiers accept strict and lazy Text as input
+  respectively. Otherwise they function identically to the %s specifier.
+* th-printf can now produce lazy Text as well as String, and the improved
+  internal representation of format strings should slightly increase performance.
 * Dropped support for GHC < 8.2. It may still build with 8.0 but I'm no longer
   testing this library with that compiler version.
 
