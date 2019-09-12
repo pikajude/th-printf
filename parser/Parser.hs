@@ -37,7 +37,7 @@ normalizeAndWarn (Arg f) = (Arg a, b)
  where
   (_, a, b) = runRWS (warnLength f >> go (spec f)) () f
   go c | c `elem` "aAeEfFgGxXo" = return ()
-  go c | c `elem` "cs?" = warnSign >> warnPrefix >> warnZero >> warnSpace
+  go c | c `elem` "csqQ?" = warnSign >> warnPrefix >> warnZero >> warnSpace
   go c | c `elem` "diu"         = warnPrefix
   go 'p'                        = warnSign >> warnPrefix >> warnZero
   go _                          = undefined
@@ -71,7 +71,7 @@ normalizeAndWarn (Arg f) = (Arg a, b)
          | x <- "fFeEgGaA"
          , y <- ["hh", "h", "l", "ll", "j", "z", "t"]
          ]
-      ++ [ (x, y) | x <- "cs", y <- ["hh", "h", "ll", "j", "z", "t", "L"] ]
+      ++ [ (x, y) | x <- "csqQ", y <- ["hh", "h", "ll", "j", "z", "t", "L"] ]
       ++ map ('p', ) ["hh", "h", "l", "ll", "j", "z", "t", "L"]
   warnLength FormatArg { spec, lengthSpec = Just l }
     | (spec, show l) `S.member` phonyLengthSpec = tell
@@ -87,7 +87,7 @@ flagSet :: CharSet
 flagSet = fromList "-+ #0"
 
 specSet :: CharSet
-specSet = fromList "diuoxXfFeEaAgGpcs?"
+specSet = fromList "diuoxXfFeEaAgGpcsQq?"
 
 lengthSpecifiers :: [(String, LengthSpecifier)]
 lengthSpecifiers =

@@ -3,9 +3,20 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
 
+-- | "Text.Printf" is a useful module, but due to the typeclass hacks it uses, it can
+-- be hard to tell if the format string you wrote is well-formed or not.
+-- This package provides a mechanism to create formatting functions at compile time.
+--
+-- Note that, to maintain consistency with other printf implementations, negative ints
+-- that are printed as unsigned will \"underflow\". (Text.Printf does this too.)
+--
+-- >>> [s|%u|] (-1 :: Int32)
+-- "4294967295"
+--
+-- Thus, any time you want to print a number using the unsigned, octal, or hex specifiers,
+-- your input must be an instance of "Bounded".
 module Language.Haskell.Printf
-  ( -- $intro
-    s
+  ( s
   , t
   , p
   , hp
@@ -32,6 +43,8 @@ import           System.IO                      ( hPutStr )
 -- @
 -- %c     :: 'Char'
 -- %s     :: 'String'
+-- %q     :: 'Data.Text.Lazy.Text' -- lazy text
+-- %Q     :: 'Data.Text.Text' -- strict text
 --
 -- -- datatypes with Show instances
 -- %?     :: 'Show' a => a
@@ -91,17 +104,3 @@ quoter e = QuasiQuoter
   , quoteType = error "this quoter cannot be used in a type context"
   , quoteDec  = error "this quoter cannot be used in a declaration context"
   }
-
--- $intro
--- "Text.Printf" is a useful module, but due to the typeclass hacks it uses, it can
--- be hard to tell if the format string you wrote is well-formed or not.
--- This package provides a mechanism to create formatting functions at compile time.
---
--- Note that, to maintain consistency with other printf implementations, negative ints
--- that are printed as unsigned will \"underflow\".
---
--- >>> [s|%u|] (-1 :: Int32)
--- "4294967295"
---
--- Thus, any time you want to print a number using the unsigned, octal, or hex specifiers,
--- your input must be an instance of "Bounded".

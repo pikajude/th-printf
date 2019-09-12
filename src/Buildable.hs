@@ -10,10 +10,12 @@ import           Data.Text.Lazy                 ( Text )
 import qualified Data.Text.Lazy.Builder        as T
 import qualified Data.Text.Lazy.Builder.Int    as T
 import           Data.Semigroup                 ( Semigroup(..) )
+import qualified Data.Text.Lazy                as L
+import qualified Data.Text                     as S
 
 newtype Sized a = Sized { unSized :: (a, Int) } deriving (Show, Ord, Eq)
 
-type SizedList a = Sized (D.DList a)
+type SizedStr = Sized (D.DList Char)
 type SizedBuilder = Sized T.Builder
 
 instance IsString a => IsString (Sized a) where
@@ -33,6 +35,11 @@ class MONOID_HEAD => Buildable a where
 
   str :: String -> a
 
+  sText :: S.Text -> a
+  sText = str . S.unpack
+  lText :: L.Text -> a
+  lText = str . L.unpack
+
   singleton :: Char -> a
   digit :: Int -> a
   digit = singleton . intToDigit
@@ -49,8 +56,8 @@ class MONOID_HEAD => Buildable a where
 
   finalize :: a -> Output a
 
-instance Buildable (SizedList Char) where
-  type Output (SizedList Char) = String
+instance Buildable SizedStr where
+  type Output SizedStr = String
   str a = Sized (D.fromList a, length a)
   singleton c = Sized (D.singleton c, 1)
   finalize = D.toList . fst . unSized
@@ -61,6 +68,8 @@ instance Buildable (SizedList Char) where
 instance Buildable SizedBuilder where
   type Output SizedBuilder = Text
   str a = Sized (fromString a, length a)
+  sText a = Sized (T.fromText a, S.length a)
+  lText a = Sized (T.fromLazyText a, fromIntegral (L.length a))
   singleton c = Sized (T.singleton c, 1)
   digit c = Sized (T.hexadecimal c, 1)
   finalize = T.toLazyText . fst . unSized

@@ -12,6 +12,8 @@ import           Test.Hspec
 main :: IO ()
 main = hspec $ describe "th-printf" $ do
   GeneratedSpec.spec
+  it "text" $ do
+    [s|%t|] "Hello, world" @?= "Hello, world"
   it "hexadecimal float" $ do
     [s|%a|] 0.857421875 @?= "0x1.b7p-1"
     [s|%A|] 3.1415926 @?= "0X1.921FB4D12D84AP+1"

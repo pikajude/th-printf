@@ -14,6 +14,8 @@ import           Foreign.Ptr
 import           GHC.Float                      ( FFFormat(..) )
 import           Language.Haskell.Printf.Geometry
 import           Language.Haskell.PrintfArg
+import qualified Data.Text.Lazy                as L
+import qualified Data.Text                     as S
 import           Math.NumberTheory.Logarithms
 
 import           NumUtils
@@ -27,6 +29,24 @@ printfString spec = Value
   { valArg    = case prec spec of
                   Nothing -> B.str <$> spec
                   Just c  -> B.str . take c <$> spec
+  , valPrefix = Nothing
+  , valSign   = Nothing
+  }
+
+printfStrictText :: B.Buildable buf => Printer S.Text buf
+printfStrictText spec = Value
+  { valArg    = case prec spec of
+                  Nothing -> B.sText <$> spec
+                  Just c  -> B.sText . S.take c <$> spec
+  , valPrefix = Nothing
+  , valSign   = Nothing
+  }
+
+printfLazyText :: B.Buildable buf => Printer L.Text buf
+printfLazyText spec = Value
+  { valArg    = case prec spec of
+                  Nothing -> B.lText <$> spec
+                  Just c  -> B.lText . L.take (fromIntegral c) <$> spec
   , valPrefix = Nothing
   , valSign   = Nothing
   }

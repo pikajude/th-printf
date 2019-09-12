@@ -28,7 +28,7 @@ import           Parser.Types            hiding ( lengthSpec
                                                 )
 
 import           Buildable                      ( finalize
-                                                , SizedList
+                                                , SizedStr
                                                 , SizedBuilder
                                                 )
 
@@ -54,7 +54,7 @@ toSplices s' ot = case parseStr s' of
     return (map VarP $ concat lhss, rhss')
   where
     otype = case ot of
-      OutputString -> [t|SizedList Char|]
+      OutputString -> [t|SizedStr|]
       OutputText -> [t|SizedBuilder|]
 
 extractExpr :: Atom -> Q ([Name], ExpQ)
@@ -86,6 +86,8 @@ extractExpr (Arg (FormatArg flags' width' precision' spec' lengthSpec')) = do
     Nothing         -> pure (Nothing, [|Nothing|])
   formatter = case spec' of
     's' -> [|Printers.printfString|]
+    'q' -> [|Printers.printfLazyText|]
+    'Q' -> [|Printers.printfStrictText|]
     '?' -> [|Printers.printfShow|]
     'd' -> [|Printers.printfDecimal|]
     'i' -> [|Printers.printfDecimal|]
