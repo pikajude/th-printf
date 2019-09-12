@@ -1,4 +1,4 @@
-# th-printf [![th-printf](https://travis-ci.org/pikajude/th-printf.svg)](https://travis-ci.org/pikajude/th-printf)
+# th-printf [![th-printf](https://travis-ci.org/pikajude/th-printf.svg)](https://travis-ci.org/pikajude/th-printf) ![th-printf](https://img.shields.io/hackage/v/th-printf)
 
 printf QuasiQuoters
 
