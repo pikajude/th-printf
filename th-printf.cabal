@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 00b88080ef4e2d333fe45cfd4b633d67a16793f89e599cef472081c9a212a38a
+-- hash: e0a5f4f766b7ef79de7d79f84d66313979a41e6bd5d932d37739e53eea702975
 
 name:           th-printf
 version:        0.7
@@ -80,7 +80,7 @@ test-suite format
       GeneratedSpec
       Paths_th_printf
   hs-source-dirs:
-      tests
+      tests/printf
   ghc-options: -Wall
   build-depends:
       HUnit

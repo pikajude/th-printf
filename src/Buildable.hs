@@ -21,10 +21,12 @@ instance IsString a => IsString (Sized a) where
 
 instance Semigroup a => Semigroup (Sized a) where
   Sized (a, b) <> Sized (c, d) = Sized (a <> c, b + d)
+  {-# INLINE (<>) #-}
 
 instance MONOID_HEAD => Monoid (Sized a) where
   mempty  = Sized (mempty, 0)
   mappend = (<>)
+  {-# INLINE mappend #-}
 
 class MONOID_HEAD => Buildable a where
   type Output a :: *

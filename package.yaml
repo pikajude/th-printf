@@ -51,7 +51,7 @@ library:
 
 tests:
   format:
-    source-dirs: tests
+    source-dirs: tests/printf
     main: format.hs
     dependencies:
       - HUnit
