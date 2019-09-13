@@ -20,8 +20,6 @@ flags:
     manual:      True
 
 when:
-  - condition: impl(ghcjs)
-    dependencies: [primitive == 0.6.3.0]
   - condition: flag(werror)
     ghc-options: -Werror
 
@@ -61,6 +59,3 @@ tests:
       - th-printf
       - text
     ghc-options: -fno-warn-type-defaults
-    when:
-      - condition: impl(ghcjs)
-        dependencies: [hspec-core == 2.4.8]

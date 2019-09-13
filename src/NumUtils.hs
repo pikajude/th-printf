@@ -112,9 +112,12 @@ formatHexFloat decs alt upper x = doFmt (floatToDigits 2 x)
         | otherwise = 'p'
   doFmt ([] , _) = undefined
   doFmt ([0], 0) = B.cons '0' (B.cons pChar (B.str "+0"))
+  -- possible ghcjs bug - some floats are encoded as ([0,...], exp + 1)
+  -- but the first digit should never be 0 unless the input is 0.0
+  doFmt (0 : bits, exp) = doFmt (bits, exp - 1)
   doFmt (_ : bits, exp) =
-    B.str "1"
-      <> (if not (null hexDigits) || alt then B.singleton '.' else mempty)
+    B.cons '1'
+      $ (if not (null hexDigits) || alt then B.singleton '.' else mempty)
       <> fromDigits upper hexDigits
       <> B.singleton pChar
       <> (if exp > 0 then B.singleton '+' else mempty)
