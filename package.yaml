@@ -16,3 +16,5 @@ library:
   source-dirs: src
   dependencies:
     - parsec
+    - containers
+    - charset
