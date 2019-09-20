@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 11a9793727490d425d34a88a8113ee4c1ddf563af9782fdc3ae507fbe7c7bd6a
+-- hash: 2cd9879e04cd34f6295eca05914eccafba607a66d7f35c25c49c892a86e04032
 
 name:           th-printf
 version:        0.7.1
@@ -24,7 +24,8 @@ source-repository head
 
 library
   exposed-modules:
-      Printf
+      Parse
+      Parse.Charset
   other-modules:
       Paths_th_printf
   hs-source-dirs:
