@@ -1,0 +1,36 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.32.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: df0596cd482947b68c6584476cc83c9e82ddbfb3d9d2000c88058680659924f8
+
+name:           th-printf
+version:        0.7.1
+synopsis:       Quasiquoters for printf
+description:    Quasiquoters for printf - string and text
+category:       Text
+homepage:       https://github.com/pikajude/th-printf#readme
+bug-reports:    https://github.com/pikajude/th-printf/issues
+author:         Jude Taylor
+maintainer:     me@jude.xyz
+tested-with:    GHC == 8.6.5
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/pikajude/th-printf
+
+library
+  exposed-modules:
+      Printf
+  other-modules:
+      Paths_th_printf
+  hs-source-dirs:
+      src
+  default-extensions: NoMonomorphismRestriction
+  build-depends:
+      base
+    , parsec
+  default-language: Haskell2010

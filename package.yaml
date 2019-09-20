@@ -1,0 +1,18 @@
+name: th-printf
+version: 0.7.1
+synopsis: Quasiquoters for printf
+description: Quasiquoters for printf - string and text
+author: Jude Taylor
+maintainer: me@jude.xyz
+tested-with: GHC == 8.6.5
+category: Text
+github: pikajude/th-printf
+
+dependencies: base
+default-extensions:
+  - NoMonomorphismRestriction
+
+library:
+  source-dirs: src
+  dependencies:
+    - parsec
