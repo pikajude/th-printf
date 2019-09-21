@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Parse where
 
@@ -12,6 +13,7 @@ import qualified Data.IntMap                   as I
 import qualified Data.IntSet                   as IS
 import           Data.Char
 import           Data.Functor                   ( void )
+import           Language.Haskell.TH.Lift
 
 import           Parse.Charset
 
@@ -69,7 +71,9 @@ fmtSpec = do
   _     <- char '%'
   flags <- many (oneOfSet flagSet) <?> "flags"
   width <- optionMaybe (var False) <?> "width specifier"
-  prec  <- optionMaybe (char '.' *> var True) <?> "precision specifier"
+  prec  <-
+    optionMaybe (char '.' *> (try (var True) <|> pure (Given 0)))
+      <?> "precision specifier"
   optional (void (try $ string "hh" <|> string "ll") <|> oneOfSet lengthSet)
     <?> "length specifier"
   spec <- oneOfSet specSet <?> "format specifier"
@@ -111,6 +115,7 @@ specSet = I.fromAscList
     , ('f', Float Lower)
     , ('g', Generic Lower)
     , ('i', Signed)
+    , ('o', Octal)
     , ('p', Ptr)
     , ('q', LazyText)
     , ('s', String)

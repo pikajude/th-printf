@@ -18,3 +18,19 @@ library:
     - parsec
     - containers
     - charset
+    - template-haskell
+    - th-lift
+    - dlist
+
+tests:
+  format:
+    source-dirs: tests/printf
+    main: format.hs
+    dependencies:
+      - HUnit
+      - QuickCheck
+      - hspec
+      - template-haskell
+      - th-printf
+      - text
+    ghc-options: -fno-warn-type-defaults

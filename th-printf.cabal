@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2cd9879e04cd34f6295eca05914eccafba607a66d7f35c25c49c892a86e04032
+-- hash: f4ad2c4b8814819f1438d7ffebbc5b93572ab9d33e9d4b39bfcd60a26051abcc
 
 name:           th-printf
 version:        0.7.1
@@ -24,8 +24,13 @@ source-repository head
 
 library
   exposed-modules:
+      Language.Haskell.Printf
+      Language.Haskell.Printf.Builder
+      Language.Haskell.Printf.Print
+      Numeric.Extra
       Parse
       Parse.Charset
+      Parse.Flags
   other-modules:
       Paths_th_printf
   hs-source-dirs:
@@ -35,5 +40,28 @@ library
       base
     , charset
     , containers
+    , dlist
     , parsec
+    , template-haskell
+    , th-lift
+  default-language: Haskell2010
+
+test-suite format
+  type: exitcode-stdio-1.0
+  main-is: format.hs
+  other-modules:
+      GeneratedSpec
+      Paths_th_printf
+  hs-source-dirs:
+      tests/printf
+  default-extensions: NoMonomorphismRestriction
+  ghc-options: -fno-warn-type-defaults
+  build-depends:
+      HUnit
+    , QuickCheck
+    , base
+    , hspec
+    , template-haskell
+    , text
+    , th-printf
   default-language: Haskell2010
