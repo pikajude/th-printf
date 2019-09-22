@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
+
 -- helpers for when a variety of single characters map to different values
-module Parse.Charset where
+module Text.Printf.TH.Parse.Charset where
 
 import qualified Data.IntSet                   as IS
 import qualified Data.IntMap                   as I

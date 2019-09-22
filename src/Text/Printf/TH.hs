@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Language.Haskell.Printf where
+module Text.Printf.TH where
 
 import           Language.Haskell.TH
 import           Language.Haskell.TH.Quote
@@ -10,10 +10,10 @@ import           Control.Monad
 import           Data.Maybe
 import           Data.Semigroup                 ( (<>) )
 
-import           Language.Haskell.Printf.Builder
-import qualified Language.Haskell.Printf.Print as P
-import           Parse
-import           Parse.Flags
+import           Text.Printf.TH.Builder
+import qualified Text.Printf.TH.Print          as P
+import           Text.Printf.TH.Parse
+import           Text.Printf.TH.Parse.Flags
 
 data OutputType = OutputString | OutputText
 
@@ -60,4 +60,5 @@ extract (FormatSpec sp flagSet width prec) = do
     Char     -> 'P.printChar
     Signed   -> 'P.printSigned
     Showable -> 'P.printShow
+    Float _  -> 'P.printFixed
     _        -> 'P.printAny

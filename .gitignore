@@ -1,3 +1,5 @@
 dist*/
 cabal.project.local*
 .ghc.*
+a.out
+main.c

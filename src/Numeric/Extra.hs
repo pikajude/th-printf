@@ -1,6 +1,6 @@
 module Numeric.Extra where
 
-import           Language.Haskell.Printf.Builder
+import           Text.Printf.TH.Builder
 
 showIntAtBase
   :: (Integral a, Show a, Builder buf) => a -> (Int -> Char) -> a -> buf

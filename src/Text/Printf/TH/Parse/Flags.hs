@@ -1,12 +1,13 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE MultiWayIf #-}
 
-module Parse.Flags where
+module Text.Printf.TH.Parse.Flags where
 
-import qualified Parse                         as P
 import           Language.Haskell.TH.Lift
 import           Data.Set                       ( Set )
 import qualified Data.Set                      as S
+
+import qualified Text.Printf.TH.Parse          as P
 
 data Justify = LeftJustify | ZeroFill deriving (Show, Eq, Ord)
 

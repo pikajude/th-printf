@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TemplateHaskell #-}
 
-module Parse where
+module Text.Printf.TH.Parse where
 
 import           Text.ParserCombinators.Parsec.Char
 import           Text.ParserCombinators.Parsec.Prim
@@ -15,7 +14,7 @@ import           Data.Char
 import           Data.Functor                   ( void )
 import           Language.Haskell.TH.Lift
 
-import           Parse.Charset
+import           Text.Printf.TH.Parse.Charset
 
 data Atom
   = FormatSpec

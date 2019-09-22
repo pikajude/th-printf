@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Language.Haskell.Printf.Builder where
+module Text.Printf.TH.Builder where
 
 import           Data.String
 import qualified Data.DList                    as D
