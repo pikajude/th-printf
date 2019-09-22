@@ -56,7 +56,8 @@ extract (FormatSpec sp flagSet width prec) = do
   extractArg (Just (Given n)) _ = pure (Nothing, [|Just n|])
   extractArg Nothing          _ = pure (Nothing, [|Nothing|])
   formatter = case sp of
-    String -> 'P.printString
-    Char   -> 'P.printChar
-    Signed -> 'P.printSigned
-    _      -> 'P.printAny
+    String   -> 'P.printString
+    Char     -> 'P.printChar
+    Signed   -> 'P.printSigned
+    Showable -> 'P.printShow
+    _        -> 'P.printAny
