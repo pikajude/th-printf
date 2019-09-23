@@ -1,7 +1,9 @@
 module Text.Printf.TH.Print where
 
 import           Data.Char
+import           Data.Maybe                     ( fromMaybe )
 import           Numeric                        ( floatToDigits )
+import           GHC.Float                      ( roundTo )
 
 import           Numeric.Extra
 import           Text.Printf.TH.Builder
@@ -28,7 +30,18 @@ printSigned flags width prec d =
     '0'
 
 printFixed :: (RealFloat f, Builder a) => Printer f a
-printFixed flags width prec d = str $ show $ floatToDigits 10 d
+printFixed flags width maybePrec f =
+  build intToDigit whole' <> char '.' <> build intToDigit part'
+ where
+  prec          = fromMaybe 6 maybePrec
+  (digs , e   ) = floatToDigits 10 f
+  (whole, part) = splitAt e fullDigits
+  whole' | null whole = [0]
+         | otherwise  = whole
+  (_, part') = roundTo 10 prec part
+  fullDigits = if e < 1
+    then replicate (-e) 0 ++ digs
+    else digs ++ replicate (e - length digs) 0
 
 printShow :: (Show i, Builder a) => Printer i a
 printShow f w p = printString f w p . show

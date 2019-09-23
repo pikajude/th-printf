@@ -55,3 +55,5 @@ justifyLeft (Just len) b | size b >= len = b
 justifyRight Nothing b _ = b
 justifyRight (Just len) b fill | size b >= len = b
                                | otherwise     = times (len - size b) fill <> b
+
+build f = foldr (cons . f) mempty

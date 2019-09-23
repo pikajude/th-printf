@@ -7,7 +7,7 @@ module GeneratedSpec where
 
 import Data.Int
 import Data.Word
-import Language.Haskell.Printf
+import Text.Printf.TH
 import Test.HUnit
 import Test.Hspec
 

@@ -12,4 +12,5 @@ justify flags w b | Just F.LeftJustify <- F.justify flags = justifyLeft w b
 sign :: (Num a, Eq a, Builder buf) => F.Flags -> a -> buf -> buf
 sign flags numValue | signum numValue == -1 = cons '-'
                     | F.sign flags          = cons '+'
+                    | F.space flags         = cons ' '
                     | otherwise             = id
