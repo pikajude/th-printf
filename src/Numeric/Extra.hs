@@ -1,5 +1,10 @@
+{-# LANGUAGE MagicHash #-}
+
 module Numeric.Extra where
 
+import           Data.Char
+import           GHC.Exts
+import           GHC.Base
 import           Text.Printf.TH.Builder
 
 showIntAtBase
@@ -15,3 +20,9 @@ showIntAtBase base toChr n0
    where
     c  = toChr (fromIntegral d)
     r' = cons c r
+
+intToDigitUpper (I# i)
+  | isTrue# (i >=# 0#) && isTrue# (i <=# 9#) = unsafeChr (ord '0' + I# i)
+  | isTrue# (i >=# 10#) && isTrue# (i <=# 15#) = unsafeChr (ord 'A' + I# i - 10)
+  | otherwise = errorWithoutStackTrace
+    ("Numeric.Extra.intToDigitUpper: not a digit " ++ show (I# i))

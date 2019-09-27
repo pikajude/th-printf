@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 963cdaa9970b0fc42d4f6134e43cb0e4b6944080d7ada1f30682f5ca92d9a485
+-- hash: 728f4ea60ce765d985a1e00155e758117fbfb57824355d50ba5bc3e9252e3b13
 
 name:           th-printf
 version:        0.7.1
@@ -31,12 +31,14 @@ library
       Text.Printf.TH.Parse.Charset
       Text.Printf.TH.Parse.Flags
       Text.Printf.TH.Print
+      Text.Printf.TH.Print.Floating
       Text.Printf.TH.Print.Utils
   other-modules:
       Paths_th_printf
   hs-source-dirs:
       src
   default-extensions: NoMonomorphismRestriction
+  ghc-options: -Wall
   build-depends:
       base
     , charset
@@ -56,7 +58,7 @@ test-suite format
   hs-source-dirs:
       tests/printf
   default-extensions: NoMonomorphismRestriction
-  ghc-options: -fno-warn-type-defaults
+  ghc-options: -Wall -fno-warn-type-defaults
   build-depends:
       HUnit
     , QuickCheck

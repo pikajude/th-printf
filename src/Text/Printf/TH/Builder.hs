@@ -52,8 +52,8 @@ justifyLeft Nothing b = b
 justifyLeft (Just len) b | size b >= len = b
                          | otherwise     = b <> times (len - size b) ' '
 
-justifyRight Nothing b _ = b
-justifyRight (Just len) b fill | size b >= len = b
+justifyRight Nothing _ b = b
+justifyRight (Just len) fill b | size b >= len = b
                                | otherwise     = times (len - size b) fill <> b
 
 build f = foldr (cons . f) mempty

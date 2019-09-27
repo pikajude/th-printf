@@ -11,6 +11,7 @@ github: pikajude/th-printf
 dependencies: base
 default-extensions:
   - NoMonomorphismRestriction
+ghc-options: -Wall
 
 library:
   source-dirs: src

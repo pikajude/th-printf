@@ -12,6 +12,7 @@ import           Data.Semigroup                 ( (<>) )
 
 import           Text.Printf.TH.Builder
 import qualified Text.Printf.TH.Print          as P
+import qualified Text.Printf.TH.Print.Floating as P
 import           Text.Printf.TH.Parse
 import           Text.Printf.TH.Parse.Flags
 
@@ -56,9 +57,15 @@ extract (FormatSpec sp flagSet width prec) = do
   extractArg (Just (Given n)) _ = pure (Nothing, [|Just n|])
   extractArg Nothing          _ = pure (Nothing, [|Nothing|])
   formatter = case sp of
-    String   -> 'P.printString
-    Char     -> 'P.printChar
-    Signed   -> 'P.printSigned
-    Showable -> 'P.printShow
-    Float _  -> 'P.printFixed
-    _        -> 'P.printAny
+    String        -> 'P.printString
+    Char          -> 'P.printChar
+    Signed        -> 'P.printSigned
+    Showable      -> 'P.printShow
+    Float   _     -> 'P.printFixed
+    Sci     _     -> 'P.printExp
+    Generic _     -> 'P.printGeneric
+    Hex     Lower -> 'P.printHexLower
+    Hex     Upper -> 'P.printHexUpper
+    Octal         -> 'P.printOctal
+    Unsigned      -> 'P.printUnsigned
+    _             -> 'P.printAny
