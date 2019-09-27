@@ -11,7 +11,9 @@ github: pikajude/th-printf
 dependencies: base
 default-extensions:
   - NoMonomorphismRestriction
-ghc-options: -Wall
+ghc-options:
+  - -Wall
+  - -fno-warn-missing-signatures
 
 library:
   source-dirs: src
@@ -22,6 +24,8 @@ library:
     - template-haskell
     - th-lift
     - dlist
+    - microlens-platform
+    - mtl
 
 tests:
   format:

@@ -1,66 +1,22 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Text.Printf.TH.Parse where
+module Text.Printf.TH.Parse
+  ( module Text.Printf.TH.Parse
+  , module Text.Printf.TH.Parse.Rules
+  )
+where
 
 import           Text.ParserCombinators.Parsec.Char
 import           Text.ParserCombinators.Parsec.Prim
 import           Text.Parsec.Combinator
 import           Control.Applicative            ( some )
-import           Data.Set                       ( Set )
 import qualified Data.Set                      as S
 import qualified Data.IntMap                   as I
 import           Data.Char
 import           Data.Functor                   ( void )
-import           Data.Maybe                     ( isJust )
 
 import           Text.Printf.TH.Parse.Charset
-
-data Atom
-  = FormatSpec
-    { fSpec :: Spec
-    , fFlags :: Set Flag
-    , fWidth :: Maybe (Variable Int)
-    , fPrecision :: Maybe (Variable Int)
-    }
-  | Plain String
-  deriving (Show, Eq)
-
-data Case
-  = Lower
-  | Upper
-  deriving (Show, Eq, Ord, Bounded, Enum)
-
-data Flag
-  = LeftJustify
-  | AlwaysSign
-  | SpacePad
-  | Prefix
-  | ZeroFill
-  deriving (Show, Eq, Ord, Bounded, Enum)
-
-data Variable a
-  = Given a
-  | Needed
-  deriving (Show, Eq, Ord)
-
-data Spec
-  = Signed
-  | Unsigned
-  | Octal
-  | Hex Case
-  | Float Case
-  | Sci Case
-  | Generic Case
-  | HexFloat Case
-  | Char
-  | String
-  | Ptr
-  | Percent
-  -- our special format args
-  | LazyText
-  | StrictText
-  | Showable
-  deriving (Show, Eq, Ord)
+import           Text.Printf.TH.Parse.Rules
 
 fmtString = many $ fmtSpec <|> Plain <$> some plainChar
   where plainChar = satisfy (/= '%')
