@@ -9,10 +9,9 @@ import           Control.Applicative            ( some )
 import           Data.Set                       ( Set )
 import qualified Data.Set                      as S
 import qualified Data.IntMap                   as I
-import qualified Data.IntSet                   as IS
 import           Data.Char
 import           Data.Functor                   ( void )
-import           Language.Haskell.TH.Lift
+import           Data.Maybe                     ( isJust )
 
 import           Text.Printf.TH.Parse.Charset
 
