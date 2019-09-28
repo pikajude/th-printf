@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 93e10d1462ea0de5c92fdd036f0dfd71558a0913ed557f29898659e6f30010d1
+-- hash: fef84a43f5716911d8a228b918c251dbc6867ddd35f4a05f4ff43d5bc02520f4
 
 name:           th-printf
 version:        0.7.1
@@ -49,6 +49,7 @@ library
     , mtl
     , parsec
     , template-haskell
+    , text
     , th-lift
   default-language: Haskell2010
 

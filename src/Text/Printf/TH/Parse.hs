@@ -18,20 +18,22 @@ import           Data.Functor                   ( void )
 import           Text.Printf.TH.Parse.Charset
 import           Text.Printf.TH.Parse.Rules
 
-fmtString = many $ fmtSpec <|> Plain <$> some plainChar
+fmtString = many $ Spec <$> fmtSpec <|> Plain <$> some plainChar
   where plainChar = satisfy (/= '%')
 
 fmtSpec = do
   _     <- char '%'
-  flags <- many (oneOfSet flagSet) <?> "flags"
+  flags <- many (snd <$> oneOfSet flagSet) <?> "flags"
   width <- optionMaybe (var False) <?> "width specifier"
   prec  <-
     optionMaybe (char '.' *> (try (var True) <|> pure (Given 0)))
       <?> "precision specifier"
-  optional (void (try $ string "hh" <|> string "ll") <|> oneOfSet lengthSet)
+  optional
+      (void (try $ string "hh" <|> string "ll") <|> void (oneOfSet lengthSet))
     <?> "length specifier"
-  spec <- oneOfSet specSet <?> "format specifier"
+  (specChar, spec) <- oneOfSet specSet <?> "format specifier"
   return FormatSpec { fSpec      = spec
+                    , fSpecChar  = specChar
                     , fFlags     = S.fromList flags
                     , fWidth     = width
                     , fPrecision = prec

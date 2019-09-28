@@ -1,1 +1,1 @@
-:set -XQuasiQuotes -XOverloadedStrings -ddump-splices
+:set -XQuasiQuotes -XOverloadedStrings -ddump-splices -fno-warn-type-defaults

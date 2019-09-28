@@ -5,8 +5,6 @@ module Text.Printf.TH where
 import           Language.Haskell.TH
 import           Language.Haskell.TH.Quote
 import           Text.Parsec                    ( parse )
-import           Control.Applicative
-import           Control.Monad
 import           Data.Maybe
 import           Data.Semigroup                 ( (<>) )
 
@@ -14,22 +12,24 @@ import           Text.Printf.TH.Builder
 import qualified Text.Printf.TH.Print          as P
 import qualified Text.Printf.TH.Print.Floating as P
 import           Text.Printf.TH.Parse
+import           Text.Printf.TH.Parse.Rules     ( applyAll )
 import           Text.Printf.TH.Parse.Flags
 
 data OutputType = OutputString | OutputText
 
 s = QuasiQuoter
-  { quoteExp  = \s -> do
-                  (lhs, rhs) <- toSplices s OutputString
+  { quoteExp  = \st -> do
+                  (lhs, rhs) <- toSplices st OutputString
                   return $ LamE lhs rhs
   , quotePat  = undefined
   , quoteType = undefined
   , quoteDec  = undefined
   }
 
-toSplices s otype = case parse fmtString "" s of
-  Left  x     -> fail $ show x
-  Right atoms -> do
+toSplices input otype = case parse fmtString "" input of
+  Left  x      -> fail $ show x
+  Right atoms' -> do
+    atoms        <- applyAll atoms'
     (lhss, rhss) <- unzip <$> mapM extract atoms
     let parts = foldr1 (\x y' -> infixApp x [|(Data.Semigroup.<>)|] y') rhss
     rhss' <- [|finalize $(sigE parts output)|]
@@ -39,13 +39,13 @@ toSplices s otype = case parse fmtString "" s of
     OutputString -> [t|Str|]
     OutputText   -> [t|()|]
 
-extract (Plain s)                          = pure ([], [|str $(stringE s)|])
-extract FormatSpec { fSpec = Percent }     = pure ([], [|char '%'|])
-extract (FormatSpec sp flagSet width prec) = do
+extract (Plain splain) = pure ([], [|str $(stringE splain)|])
+extract (Spec FormatSpec { fSpec = Percent }) = pure ([], [|char '%'|])
+extract (Spec (FormatSpec sp _ flagSet' width prec)) = do
   (warg, wexp) <- extractArg width "width"
   (parg, pexp) <- extractArg prec "prec"
   varg         <- newName "var"
-  let flags = mkFlags flagSet
+  let flags = mkFlags flagSet'
   return
     ( catMaybes [warg, parg, Just varg]
     , [|$(varE formatter) flags $(wexp) $(pexp) $(varE varg)|]
@@ -57,15 +57,19 @@ extract (FormatSpec sp flagSet width prec) = do
   extractArg (Just (Given n)) _ = pure (Nothing, [|Just n|])
   extractArg Nothing          _ = pure (Nothing, [|Nothing|])
   formatter = case sp of
-    String        -> 'P.printString
-    Char          -> 'P.printChar
-    Signed        -> 'P.printSigned
-    Showable      -> 'P.printShow
-    Float   _     -> 'P.printFixed
-    Sci     _     -> 'P.printExp
-    Generic _     -> 'P.printGeneric
-    Hex     Lower -> 'P.printHexLower
-    Hex     Upper -> 'P.printHexUpper
-    Octal         -> 'P.printOctal
-    Unsigned      -> 'P.printUnsigned
-    _             -> 'P.printAny
+    String         -> 'P.printString
+    Char           -> 'P.printChar
+    Signed         -> 'P.printSigned
+    Showable       -> 'P.printShow
+    Float   _      -> 'P.printFixed
+    Sci     _      -> 'P.printExp
+    Generic _      -> 'P.printGeneric
+    Hex     Lower  -> 'P.printHexLower
+    Hex     Upper  -> 'P.printHexUpper
+    Octal          -> 'P.printOctal
+    Unsigned       -> 'P.printUnsigned
+    HexFloat Lower -> 'P.printHexFloatLower
+    HexFloat Upper -> 'P.printHexFloatUpper
+    StrictText     -> 'P.printStrictText
+    LazyText       -> 'P.printLazyText
+    _              -> 'P.printAny

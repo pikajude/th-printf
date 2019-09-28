@@ -26,6 +26,7 @@ library:
     - dlist
     - microlens-platform
     - mtl
+    - text
 
 tests:
   format:

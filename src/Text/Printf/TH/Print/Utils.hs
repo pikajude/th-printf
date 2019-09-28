@@ -1,3 +1,6 @@
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE GADTs #-}
+
 module Text.Printf.TH.Print.Utils where
 
 import           Text.Printf.TH.Builder

@@ -10,5 +10,5 @@ import           Data.Char                      ( ord )
 
 oneOfSet c = do
   ch <- satisfy (\u -> IS.member (ord u) keyset)
-  return $ c I.! ord ch
+  return (ch, c I.! ord ch)
   where keyset = I.keysSet c

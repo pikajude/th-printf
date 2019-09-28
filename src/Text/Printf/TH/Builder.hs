@@ -7,6 +7,9 @@ module Text.Printf.TH.Builder where
 import           Data.String
 import qualified Data.DList                    as D
 
+import qualified Data.Text                     as S
+import qualified Data.Text.Lazy                as L
+
 class Monoid a => Builder a where
   type Output a :: *
 
@@ -15,6 +18,9 @@ class Monoid a => Builder a where
   str :: String -> a
   default str :: IsString a => String -> a
   str = fromString
+
+  stext :: S.Text -> a
+  ltext :: L.Text -> a
 
   char :: Char -> a
   default char :: IsString a => Char -> a
@@ -45,6 +51,9 @@ instance Builder Str where
   char c = Str (D.singleton c, 1)
   times n c = Str (D.replicate n c, n)
   cons c (Str (l, n)) = Str (D.cons c l, n + 1)
+
+  stext s = Str (D.fromList $ S.unpack s, S.length s)
+  ltext s = Str (D.fromList $ L.unpack s, fromIntegral $ L.length s)
 
   size = snd . unStr
 
