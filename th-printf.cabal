@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fef84a43f5716911d8a228b918c251dbc6867ddd35f4a05f4ff43d5bc02520f4
+-- hash: efbe59e2d321f3d6c88024314ba27f684e8c77ddba89d610e5738fed58ee8b93
 
 name:           th-printf
 version:        0.7.1
@@ -27,13 +27,13 @@ library
       Numeric.Extra
       Text.Printf.TH
       Text.Printf.TH.Builder
+      Text.Printf.TH.Layout
+      Text.Printf.TH.Layouters
+      Text.Printf.TH.Layouters.Float
       Text.Printf.TH.Parse
       Text.Printf.TH.Parse.Charset
       Text.Printf.TH.Parse.Flags
       Text.Printf.TH.Parse.Rules
-      Text.Printf.TH.Print
-      Text.Printf.TH.Print.Floating
-      Text.Printf.TH.Print.Utils
   other-modules:
       Paths_th_printf
   hs-source-dirs:

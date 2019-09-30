@@ -3,6 +3,7 @@
 
 module Text.Printf.TH.Parse.Flags where
 
+import           Control.Monad                  ( guard )
 import           Language.Haskell.TH.Syntax
 import           Data.Set                       ( Set )
 import qualified Data.Set                      as S
@@ -17,6 +18,11 @@ data Flags = Flags
   , space :: Bool
   , prefix :: Bool
   } deriving (Show, Eq, Ord, Lift)
+
+noZero Flags { justify = j } = do
+  just <- j
+  guard (just /= ZeroFill)
+  pure just
 
 mkFlags :: Set P.Flag -> Flags
 mkFlags fs = Flags

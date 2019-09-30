@@ -9,11 +9,12 @@ import           Data.Maybe
 import           Data.Semigroup                 ( (<>) )
 
 import           Text.Printf.TH.Builder
-import qualified Text.Printf.TH.Print          as P
-import qualified Text.Printf.TH.Print.Floating as P
 import           Text.Printf.TH.Parse
 import           Text.Printf.TH.Parse.Rules     ( applyAll )
 import           Text.Printf.TH.Parse.Flags
+import qualified Text.Printf.TH.Layouters      as L
+import qualified Text.Printf.TH.Layouters.Float
+                                               as FL
 
 data OutputType = OutputString | OutputText
 
@@ -48,7 +49,7 @@ extract (Spec (FormatSpec sp _ flagSet' width prec)) = do
   let flags = mkFlags flagSet'
   return
     ( catMaybes [warg, parg, Just varg]
-    , [|$(varE formatter) flags $(wexp) $(pexp) $(varE varg)|]
+    , [|$(varE formatter) $(wexp) $(pexp) flags $(varE varg)|]
     )
  where
   extractArg (Just Needed) name = do
@@ -57,19 +58,8 @@ extract (Spec (FormatSpec sp _ flagSet' width prec)) = do
   extractArg (Just (Given n)) _ = pure (Nothing, [|Just n|])
   extractArg Nothing          _ = pure (Nothing, [|Nothing|])
   formatter = case sp of
-    String         -> 'P.printString
-    Char           -> 'P.printChar
-    Signed         -> 'P.printSigned
-    Showable       -> 'P.printShow
-    Float   _      -> 'P.printFixed
-    Sci     _      -> 'P.printExp
-    Generic _      -> 'P.printGeneric
-    Hex     Lower  -> 'P.printHexLower
-    Hex     Upper  -> 'P.printHexUpper
-    Octal          -> 'P.printOctal
-    Unsigned       -> 'P.printUnsigned
-    HexFloat Lower -> 'P.printHexFloatLower
-    HexFloat Upper -> 'P.printHexFloatUpper
-    StrictText     -> 'P.printStrictText
-    LazyText       -> 'P.printLazyText
-    _              -> 'P.printAny
+    Signed  -> 'L.decimal
+    Float _ -> 'FL.fixed
+    String  -> 'L.string
+    Char    -> 'L.chr
+    _       -> 'undefined
