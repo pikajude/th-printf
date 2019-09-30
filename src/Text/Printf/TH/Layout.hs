@@ -1,5 +1,6 @@
 module Text.Printf.TH.Layout where
 
+import           Control.Monad                  ( guard )
 import           Data.Maybe                     ( fromMaybe )
 
 import qualified Text.Printf.TH.Parse.Flags    as F
@@ -17,7 +18,14 @@ layout w p j buf = case j of
   b0   = fromMaybe mempty p
   s0   = size b0
 
+hideZero (Just 0) 0 _ = mempty
+hideZero _        _ b = b
+
 signedPrefix flags d | d < 0         = Just (char '-')
                      | F.sign flags  = Just (char '+')
                      | F.space flags = Just (char ' ')
                      | otherwise     = Nothing
+
+hexPrefix upper flags d = do
+  guard (F.prefix flags && d /= 0)
+  Just $ str (if upper then "0X" else "0x")

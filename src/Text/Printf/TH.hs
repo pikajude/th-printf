@@ -58,8 +58,19 @@ extract (Spec (FormatSpec sp _ flagSet' width prec)) = do
   extractArg (Just (Given n)) _ = pure (Nothing, [|Just n|])
   extractArg Nothing          _ = pure (Nothing, [|Nothing|])
   formatter = case sp of
-    Signed  -> 'L.decimal
-    Float _ -> 'FL.fixed
-    String  -> 'L.string
-    Char    -> 'L.chr
-    _       -> 'undefined
+    Signed         -> 'L.signed
+    Unsigned       -> 'L.unsigned
+    Hex Upper      -> 'L.hexUpper
+    Hex Lower      -> 'L.hexLower
+    Octal          -> 'L.octal
+    Float    _     -> 'FL.fixed
+    Sci      _     -> 'FL.sci
+    Generic  _     -> 'FL.generic
+    HexFloat Upper -> 'FL.hexUpper
+    HexFloat Lower -> 'FL.hexLower
+    String         -> 'L.string
+    Char           -> 'L.chr
+    StrictText     -> 'L.strictText
+    LazyText       -> 'L.lazyText
+    Showable       -> 'L.shown
+    Ptr            -> 'L.ptr
