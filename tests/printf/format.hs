@@ -22,6 +22,12 @@ main = hspec $ describe "th-printf" $ do
     [s|Hello, %q!|] (L.pack "world") @?= "Hello, world!"
   -- poor coverage for this in the generated tests
   it "float generic" $ do
+    [s|%g|] 50.0 @?= "50"
+    [s|%#g|] 50.0 @?= "50.0000"
+    [s|%g|] 123456789.987654321 @?= "1.23457e+08"
+    [s|%#g|] 123456.789 @?= "123457."
+    [s|%#g|] 0.00056 @?= "0.000560000"
+    [s|%#g|] 0.000000056 @?= "5.60000e-08"
     [s|%2.4g|] 123456.789 @?= "1.235e+05"
     [s|%2.4G|] 123456.789 @?= "1.235E+05"
     [s|%10.5g|] 12.5 @?= "      12.5"

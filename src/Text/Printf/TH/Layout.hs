@@ -16,7 +16,7 @@ layout w p j buf = case j of
  where
   alt0 = b0 <> buf
   b0   = fromMaybe mempty p
-  s0   = size b0
+  s0   = maybe 0 size p
 
 hideZero (Just 0) 0 _ = mempty
 hideZero _        _ b = b

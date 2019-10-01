@@ -74,3 +74,4 @@ extract (Spec (FormatSpec sp _ flagSet' width prec)) = do
     LazyText       -> 'L.lazyText
     Showable       -> 'L.shown
     Ptr            -> 'L.ptr
+    Percent        -> undefined
