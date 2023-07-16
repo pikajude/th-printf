@@ -1,13 +1,12 @@
 name: th-printf
-version: 0.7
+version: 0.8
 synopsis: Quasiquoters for printf
 description: Quasiquoters for string and text printf
 author: Jude Taylor
 maintainer: me@jude.xyz
-tested-with: GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
+tested-with: GHC == 8.6.5, GHC == 8.8.4, GHC == 8.10.7, GHC == 9.0.2, GHC == 9.2.7, GHC == 9.4.5, GHC == 9.6.2
 extra-source-files:
   - CHANGELOG.md
-  - include/compat-defs.h
 category: Text
 github: pikajude/th-printf
 
@@ -24,7 +23,7 @@ when:
     ghc-options: -Werror
 
 dependencies:
-  - base == 4.*
+  - base >= 4.12 && < 5
 
 library:
   source-dirs: [src, parser]
@@ -44,8 +43,6 @@ library:
     - text
     - dlist
     - integer-logarithms
-  cpp-options: -include include/compat-defs.h
-  default-extensions: CPP
 
 tests:
   format:
