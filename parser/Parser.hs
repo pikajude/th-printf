@@ -93,9 +93,9 @@ specSet = fromList "diuoxXfFeEaAgGpcsQq?"
 
 lengthSpecifiers :: [(String, LengthSpecifier)]
 lengthSpecifiers =
-  [ ("hh", DoubleH)
+  [ ("hh", HH)
   , ("h", H)
-  , ("ll", DoubleL)
+  , ("ll", LL)
   , ("l", L)
   , ("j", J)
   , ("z", Z)
@@ -103,17 +103,17 @@ lengthSpecifiers =
   , ("L", BigL)
   ]
 
-oneOfSet :: (Stream s m Char) => CharSet -> ParsecT s u m Char
+oneOfSet :: Stream s m Char => CharSet -> ParsecT s u m Char
 oneOfSet s = satisfy (`member` s)
 
-printfStr :: (Stream s m Char) => ParsecT s u m [Atom]
+printfStr :: Stream s m Char => ParsecT s u m [Atom]
 printfStr =
   many $
     Str "%" <$ try (string "%%")
       <|> Arg <$> fmtArg
       <|> Str <$> some (satisfy (/= '%'))
 
-fmtArg :: (Stream s m Char) => ParsecT s u m FormatArg
+fmtArg :: Stream s m Char => ParsecT s u m FormatArg
 fmtArg = do
   _ <- char '%'
   flags <- do
@@ -132,7 +132,8 @@ fmtArg = do
       else pure $ toFlagSet flagSet'
   width <- numArg <?> "width"
   precision <- optionMaybe (char '.' *> numArg) <?> "precision"
-  lengthSpec <- optionMaybe $ choice $ Prelude.map (\(a, b) -> b <$ string a) lengthSpecifiers
+  lengthSpec <-
+    optionMaybe $ choice $ Prelude.map (\(a, b) -> b <$ string a) lengthSpecifiers
   spec <- oneOfSet specSet <?> "valid specifier"
   pure $ FormatArg flags width (fromMaybe (Given 0) <$> precision) spec lengthSpec
  where

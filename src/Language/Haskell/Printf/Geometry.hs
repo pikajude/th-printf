@@ -15,7 +15,7 @@ import Data.Maybe
 import Language.Haskell.PrintfArg
 import Parser.Types (Adjustment (..))
 
-import Buildable
+import Buf
 import StrUtils
 
 data Value buf = Value
@@ -53,11 +53,11 @@ formatOne :: (Buf buf) => Value buf -> buf
 formatOne Value{..}
   | Nothing <- width valArg = prefix' <> text
   | Just w <- width valArg = case adjustment valArg of
-      Just ZeroPadded
-        | isn'tDecimal || isNothing (prec valArg) ->
-            prefix' <> justifyRight (w - size prefix') '0' text
-      Just LeftJustified -> justifyLeft w ' ' (prefix' <> text)
-      _ -> justify' w (prefix' <> text)
+    Just ZeroPadded
+      | isn'tDecimal || isNothing (prec valArg) ->
+        prefix' <> justifyRight (w - size prefix') '0' text
+    Just LeftJustified -> justifyLeft w ' ' (prefix' <> text)
+    _ -> justify' w (prefix' <> text)
  where
   isn'tDecimal = fieldSpec valArg `notElem` ("diouxX" :: String)
   justify' n

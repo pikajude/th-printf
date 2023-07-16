@@ -19,7 +19,7 @@ import Prelude hiding (
   (<>),
  )
 
-import Buildable
+import Buf
 import StrUtils
 
 showIntAtBase ::
@@ -47,9 +47,9 @@ formatRealFloatAlt fmt decs forceDot upper x
   | isNaN x = str "NaN"
   | isInfinite x = str $ if x < 0 then "-Infinity" else "Infinity"
   | x < 0 || isNegativeZero x =
-      cons
-        '-'
-        (doFmt fmt (floatToDigits 10 (-x)) False)
+    cons
+      '-'
+      (doFmt fmt (floatToDigits 10 (- x)) False)
   | otherwise = doFmt fmt (floatToDigits 10 x) False
  where
   eChar
@@ -57,13 +57,13 @@ formatRealFloatAlt fmt decs forceDot upper x
     | otherwise = 'e'
   doFmt FFFixed (digs, exp) fullRounding
     | exp < 0 =
-        doFmt FFFixed (replicate (negate exp) 0 ++ digs, 0) fullRounding
+      doFmt FFFixed (replicate (negate exp) 0 ++ digs, 0) fullRounding
     | null part =
-        fromDigits False whole <> (if forceDot then singleton '.' else mempty)
+      fromDigits False whole <> (if forceDot then singleton '.' else mempty)
     | null whole =
-        str "0." <> fromDigits False part
+      str "0." <> fromDigits False part
     | otherwise =
-        fromDigits False whole <> singleton '.' <> fromDigits False part
+      fromDigits False whole <> singleton '.' <> fromDigits False part
    where
     (whole, part) =
       uncurry (flip splitAt) (toRoundedDigits decs (digs, exp) fullRounding)

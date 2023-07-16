@@ -1,6 +1,6 @@
 module StrUtils (justifyLeft, justifyRight) where
 
-import Buildable
+import Buf
 
 justifyLeft :: (Buf a) => Int -> Char -> a -> a
 justifyLeft n c s

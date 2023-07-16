@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6aeece5259e4fa083c76ffee3c6ae04aee3fb63236c08d5baa8d72c15f303e7c
+-- hash: 2c66cae19dd2d4755e43efd18a33f68b7915203fcda2414e20bcdad18ad532d6
 
 name:           th-printf
 version:        0.8
@@ -18,7 +18,7 @@ maintainer:     me@jude.xyz
 license:        MIT
 license-file:   LICENSE
 tested-with:
-    GHC == 8.0.2, GHC == 8.2.2, GHC == 8.8.4, GHC == 8.10.7, GHC == 9.0.2, GHC == 9.2.7, GHC == 9.4.5, GHC == 9.6.2
+    GHC == 8.6.5, GHC == 8.8.4, GHC == 8.10.7, GHC == 9.0.2, GHC == 9.2.7, GHC == 9.4.5, GHC == 9.6.2
 build-type:     Simple
 extra-source-files:
     CHANGELOG.md
@@ -37,7 +37,7 @@ library
       Language.Haskell.Printf
       Language.Haskell.Printf.Lib
   other-modules:
-      Buildable
+      Buf
       Language.Haskell.Printf.Geometry
       Language.Haskell.Printf.Printers
       Language.Haskell.PrintfArg

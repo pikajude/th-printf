@@ -58,14 +58,9 @@ jobs:
             compilerVersion: 8.8.4
             setup-method: hvr-ppa
             allow-failure: false
-          - compiler: ghc-8.2.2
+          - compiler: ghc-8.6.5
             compilerKind: ghc
-            compilerVersion: 8.2.2
-            setup-method: hvr-ppa
-            allow-failure: false
-          - compiler: ghc-8.0.2
-            compilerKind: ghc
-            compilerVersion: 8.0.2
+            compilerVersion: 8.6.5
             setup-method: hvr-ppa
             allow-failure: false
       fail-fast: false
@@ -194,8 +189,8 @@ jobs:
           touch cabal.project
           touch cabal.project.local
           echo "packages: ${PKGDIR_th_printf}" >> cabal.project
-          if [ $((HCNUMVER >= 80200)) -ne 0 ] ; then echo "package th-printf" >> cabal.project ; fi
-          if [ $((HCNUMVER >= 80200)) -ne 0 ] ; then echo "    ghc-options: -Werror=missing-methods" >> cabal.project ; fi
+          echo "package th-printf" >> cabal.project
+          echo "    ghc-options: -Werror=missing-methods" >> cabal.project
           cat >> cabal.project <<EOF
           EOF
           $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(th-printf)$/; }' >> cabal.project.local

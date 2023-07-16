@@ -18,7 +18,7 @@ import Language.Haskell.PrintfArg
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
 
-import Buildable (
+import Buf (
   SizedBuilder,
   SizedStr,
   finalize,

@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Buildable (Buf (..), SizedStr, SizedBuilder) where
+module Buf (Buf (..), SizedStr, SizedBuilder) where
 
 import Data.Char (intToDigit)
 import qualified Data.DList as D

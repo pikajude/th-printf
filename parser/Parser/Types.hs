@@ -1,7 +1,25 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Parser.Types where
+module Parser.Types (
+  Atom (..),
+  FormatArg (..),
+  Flag (..),
+  adjustmentFlags,
+  Adjustment (..),
+  FormatStr,
+  MaySpecify (..),
+  emptyFlagSet,
+  toFlagSet,
+  FlagSet (..),
+  LengthSpecifier (..),
+  flags_,
+  spec_,
+  signed_,
+  prefixed_,
+  spaced_,
+  adjustment_,
+) where
 
 import Data.Foldable (
   elem,
@@ -22,10 +40,10 @@ data Atom
   deriving (Show)
 
 data LengthSpecifier
-  = DoubleH
+  = HH
   | H
-  | DoubleL
   | BigL
+  | LL
   | L
   | J
   | Z
@@ -33,10 +51,10 @@ data LengthSpecifier
   deriving (Eq)
 
 instance Show LengthSpecifier where
-  show DoubleH = "hh"
+  show HH = "hh"
   show H = "h"
-  show DoubleL = "ll"
   show BigL = "L"
+  show LL = "ll"
   show L = "l"
   show J = "j"
   show Z = "z"
@@ -110,10 +128,7 @@ makeLensesFor
 
 makeLensesFor
   [ ("flags", "flags_")
-  , ("width", "width_")
-  , ("precision", "precision_")
   , ("spec", "spec_")
-  , ("lengthSpec", "lengthSpec_")
   ]
   ''FormatArg
 

@@ -16,7 +16,7 @@ import Language.Haskell.Printf.Geometry
 import Language.Haskell.PrintfArg
 import Math.NumberTheory.Logarithms
 
-import Buildable
+import Buf
 import NumUtils
 import qualified Parser.Types as P
 
