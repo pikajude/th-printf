@@ -1,6 +1,7 @@
 ## 0.8.0 (2023-07-16)
 
-Support for base >= 4.15 / GHC 9.
+- Support for base >= 4.15 / GHC 9.
+- Dropped support for GHC versions that have no corresponding HLS version.
 
 ## 0.7.0 (2019-09-12)
 
