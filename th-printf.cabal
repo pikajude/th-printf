@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d75c1e8299e5a270d3d10ee841ea99a17180647d573a6ac684d2dd32f4aa069a
+-- hash: 414f4e04ac83052cc8cacc595703e9530c7ff9266f6f3602868cd2efd091165a
 
 name:           th-printf
-version:        0.7
+version:        0.8
 synopsis:       Quasiquoters for printf
 description:    Quasiquoters for string and text printf
 category:       Text

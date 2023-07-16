@@ -1,5 +1,5 @@
 name: th-printf
-version: 0.7
+version: 0.8
 synopsis: Quasiquoters for printf
 description: Quasiquoters for string and text printf
 author: Jude Taylor
