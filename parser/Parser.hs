@@ -104,10 +104,10 @@ lengthSpecifiers =
   , ("L", BigL)
   ]
 
-oneOfSet :: (Stream s m Char) => CharSet -> ParsecT s u m Char
+oneOfSet :: Stream s m Char => CharSet -> ParsecT s u m Char
 oneOfSet s = satisfy (`member` s)
 
-printfStr :: (Stream s m Char) => ParsecT s u m [Atom]
+printfStr :: Stream s m Char => ParsecT s u m [Atom]
 printfStr = do
   atoms <-
     many $
@@ -119,7 +119,7 @@ printfStr = do
   go (a : as) = a : go as
   go [] = []
 
-fmtArg :: (Stream s m Char) => ParsecT s u m FormatArg
+fmtArg :: Stream s m Char => ParsecT s u m FormatArg
 fmtArg = do
   char '%'
   flags <- do
