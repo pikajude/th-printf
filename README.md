@@ -1,11 +1,10 @@
-# th-printf [![th-printf](https://travis-ci.org/pikajude/th-printf.svg)](https://travis-ci.org/pikajude/th-printf) [![th-printf](https://img.shields.io/hackage/v/th-printf)](https://hackage.haskell.org/package/th-printf)
+# th-printf ![th-printf](https://github.com/pikajude/th-printf/actions/workflows/haskell-ci.yml/badge.svg) [![th-printf](https://img.shields.io/hackage/v/th-printf)](https://hackage.haskell.org/package/th-printf)
 
 printf QuasiQuoters
 
-Usage
------
+## Usage
 
-``` haskell
+```haskell
 import Language.Haskell.Printf
 
 -- String interpolation
