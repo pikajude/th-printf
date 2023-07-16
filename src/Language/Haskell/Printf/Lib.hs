@@ -23,6 +23,7 @@ import Buildable (
   SizedStr,
   finalize,
  )
+import Control.Monad (mapAndUnzipM)
 import Parser (parseStr)
 import Parser.Types hiding (
   lengthSpec,
@@ -46,7 +47,7 @@ toSplices s' ot = case parseStr s' of
   Left x -> fail $ show x
   Right (y, warns) -> do
     mapM_ (qReport False) (concat warns)
-    (lhss, rhss) <- unzip <$> mapM extractExpr y
+    (lhss, rhss) <- mapAndUnzipM extractExpr y
     rhss' <-
       appE
         [|finalize|]

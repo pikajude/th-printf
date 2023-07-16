@@ -2,13 +2,12 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
-{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 module Language.Haskell.Printf.Printers where
 
 import Data.Char
 import Data.Maybe (fromMaybe)
-import Data.String (fromString)
+import Data.String (IsString, fromString)
 import qualified Data.Text as S
 import qualified Data.Text.Lazy as L
 import Foreign.Ptr
@@ -81,6 +80,7 @@ printfPtr spec =
     , valSign = Nothing
     }
 
+printfDecimal :: (Buf buf, Show n, Integral n) => PrintfArg n -> Value buf
 printfDecimal spec =
   Value
     { valArg = padDecimal spec . showIntAtBase 10 intToDigit . abs <$> spec
@@ -100,10 +100,12 @@ fmtUnsigned shower p spec =
     , valSign = Nothing
     }
 
+printfHex :: (Bounded a, Integral a, Buf buf, IsString buf) => Bool -> Printer a buf
 printfHex b = fmtUnsigned showHex (prefix (if b then "0X" else "0x"))
  where
   showHex = showIntAtBase 16 ((if b then toUpper else id) . intToDigit)
 
+printfUnsigned :: (Bounded a, Integral a, Buf buf) => Printer a buf
 printfUnsigned = fmtUnsigned (showIntAtBase 10 intToDigit) (const Nothing)
 
 -- printing octal is really annoying.  consider
@@ -127,6 +129,7 @@ printfUnsigned = fmtUnsigned (showIntAtBase 10 intToDigit) (const Nothing)
 -- in octal, when combining prefix and padding, the prefix
 -- must eat the first padding char
 {-# ANN printfOctal ("HLint: ignore Use showOct" :: String) #-}
+printfOctal :: (Buf buf, IsString buf, Bounded n, Integral n) => PrintfArg n -> Value buf
 printfOctal spec =
   fmtUnsigned
     (showIntAtBase 8 intToDigit)
@@ -136,6 +139,7 @@ printfOctal spec =
   expectedWidth = integerLogBase 8 (max 1 $ clampUnsigned $ value spec) + 1
   shouldUnpad = prefixed spec && fromMaybe 0 (prec spec) > expectedWidth
 
+printfFloating :: (Buf buf, RealFloat n) => Bool -> PrintfArg n -> Value buf
 printfFloating upperFlag spec =
   Value
     { valArg = showFloat . abs <$> spec
@@ -149,6 +153,7 @@ printfFloating upperFlag spec =
     _ -> Nothing
   showFloat = formatRealFloatAlt FFFixed precision (prefixed spec) upperFlag
 
+printfScientific :: (Buf buf, RealFloat n) => Bool -> PrintfArg n -> Value buf
 printfScientific upperFlag spec =
   Value
     { valArg = showSci . abs <$> spec
@@ -163,6 +168,7 @@ printfScientific upperFlag spec =
       (prefixed spec)
       upperFlag
 
+printfGeneric :: (Buf buf, RealFloat n) => Bool -> PrintfArg n -> Value buf
 printfGeneric upperFlag spec =
   Value
     { valArg = showSci . abs <$> spec
@@ -177,6 +183,7 @@ printfGeneric upperFlag spec =
       (prefixed spec)
       upperFlag
 
+printfFloatHex :: (Buf buf, RealFloat n, IsString buf) => Bool -> PrintfArg n -> Value buf
 printfFloatHex upperFlag spec =
   Value
     { valArg = showHexFloat . abs <$> spec

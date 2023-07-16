@@ -3,11 +3,10 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
-{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 
 module Parser where
 
-import Control.Applicative
+import Control.Applicative hiding ((<|>))
 import Control.Monad (when)
 import Control.Monad.Fix
 import Control.Monad.RWS
@@ -104,24 +103,19 @@ lengthSpecifiers =
   , ("L", BigL)
   ]
 
-oneOfSet :: Stream s m Char => CharSet -> ParsecT s u m Char
+oneOfSet :: (Stream s m Char) => CharSet -> ParsecT s u m Char
 oneOfSet s = satisfy (`member` s)
 
-printfStr :: Stream s m Char => ParsecT s u m [Atom]
-printfStr = do
-  atoms <-
-    many $
-      choice
-        [Str "%" <$ try (string "%%"), Arg <$> fmtArg, Str . return <$> noneOf "%"]
-  return $ go atoms
- where
-  go (Str s : Str s1 : as) = go (Str (s ++ s1) : as)
-  go (a : as) = a : go as
-  go [] = []
+printfStr :: (Stream s m Char) => ParsecT s u m [Atom]
+printfStr =
+  many $
+    Str "%" <$ try (string "%%")
+      <|> Arg <$> fmtArg
+      <|> Str <$> some (satisfy (/= '%'))
 
-fmtArg :: Stream s m Char => ParsecT s u m FormatArg
+fmtArg :: (Stream s m Char) => ParsecT s u m FormatArg
 fmtArg = do
-  char '%'
+  _ <- char '%'
   flags <- do
     fs <- many $ do
       c <- oneOfSet flagSet <?> "flag"
@@ -131,34 +125,18 @@ fmtArg = do
         ' ' -> FlagSpaced
         '#' -> FlagPrefixed
         '0' -> FlagZeroPadded
-        _ -> error "???"
+        _ -> error "unreachable"
     let flagSet' = S.fromList fs
     if S.size flagSet' < length fs
       then fail "Duplicate flags specified"
       else pure $ toFlagSet flagSet'
-  width <- optionMaybe (choice [Given <$> nat, Need <$ char '*']) <?> "width"
-  precision <-
-    optionMaybe
-      ( do
-          char '.'
-          optionMaybe $ choice [Given <$> nat, Need <$ char '*']
-      )
-      <?> "precision"
-  lengthSpec <-
-    optionMaybe $
-      choice $
-        Prelude.map
-          (\(a, b) -> b <$ string a)
-          lengthSpecifiers
+  width <- numArg <?> "width"
+  precision <- optionMaybe (char '.' *> numArg) <?> "precision"
+  lengthSpec <- optionMaybe $ choice $ Prelude.map (\(a, b) -> b <$ string a) lengthSpecifiers
   spec <- oneOfSet specSet <?> "valid specifier"
-  pure $
-    FormatArg
-      flags
-      width
-      (fromMaybe (Given 0) <$> precision)
-      spec
-      lengthSpec
+  pure $ FormatArg flags width (fromMaybe (Given 0) <$> precision) spec lengthSpec
  where
   nat = do
     c <- many1 $ satisfy isDigit
     return (read c :: Integer)
+  numArg = optionMaybe (Given <$> nat <|> Need <$ char '*')
