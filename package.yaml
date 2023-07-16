@@ -23,7 +23,7 @@ when:
     ghc-options: -Werror
 
 dependencies:
-  - base >= 4.9 && < 5
+  - base >= 4.12 && < 5
 
 library:
   source-dirs: [src, parser]
