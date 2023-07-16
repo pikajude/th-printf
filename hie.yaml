@@ -1,0 +1,10 @@
+cradle:
+  cabal:
+    - path: "src"
+      component: "lib:th-printf"
+
+    - path: "parser"
+      component: "lib:th-printf"
+
+    - path: "tests/printf"
+      component: "th-printf:test:format"

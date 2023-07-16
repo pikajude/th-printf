@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.32.0.
+-- This file has been generated from package.yaml by hpack version 0.35.3.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7db0c0c85f70fa7564d6e4c1aa50a7c5bf3ced441314226633293b06391bea5c
+-- hash: f5c1bd01fbf614761f9c0a139cf4f6dbbf81252966a71b2999a325052c9a575d
 
 name:           th-printf
 version:        0.7
@@ -17,11 +17,11 @@ author:         Jude Taylor
 maintainer:     me@jude.xyz
 license:        MIT
 license-file:   LICENSE
-tested-with:    GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
+tested-with:
+    GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
 build-type:     Simple
 extra-source-files:
     CHANGELOG.md
-    include/compat-defs.h
 
 source-repository head
   type: git
@@ -49,9 +49,7 @@ library
   hs-source-dirs:
       src
       parser
-  default-extensions: CPP
   ghc-options: -Wall
-  cpp-options: -include include/compat-defs.h
   build-depends:
       base ==4.*
     , charset
@@ -66,9 +64,9 @@ library
     , text
     , th-lift
     , transformers
+  default-language: Haskell2010
   if flag(werror)
     ghc-options: -Werror
-  default-language: Haskell2010
 
 test-suite format
   type: exitcode-stdio-1.0
@@ -87,6 +85,6 @@ test-suite format
     , template-haskell
     , text
     , th-printf
+  default-language: Haskell2010
   if flag(werror)
     ghc-options: -Werror
-  default-language: Haskell2010

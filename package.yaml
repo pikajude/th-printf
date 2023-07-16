@@ -7,7 +7,6 @@ maintainer: me@jude.xyz
 tested-with: GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
 extra-source-files:
   - CHANGELOG.md
-  - include/compat-defs.h
 category: Text
 github: pikajude/th-printf
 
@@ -44,8 +43,6 @@ library:
     - text
     - dlist
     - integer-logarithms
-  cpp-options: -include include/compat-defs.h
-  default-extensions: CPP
 
 tests:
   format:

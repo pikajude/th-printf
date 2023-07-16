@@ -1,15 +1,15 @@
-{-# OPTIONS_GHC -Wwarn #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# OPTIONS_GHC -Wwarn #-}
 
 module Main where
 
-import           Foreign.Ptr
-import           GeneratedSpec
-import           Language.Haskell.Printf
-import           Test.HUnit
-import           Test.Hspec
-import qualified Data.Text                     as S
-import qualified Data.Text.Lazy                as L
+import qualified Data.Text as S
+import qualified Data.Text.Lazy as L
+import Foreign.Ptr
+import GeneratedSpec
+import Language.Haskell.Printf
+import Test.HUnit
+import Test.Hspec
 
 main :: IO ()
 main = hspec $ describe "th-printf" $ do

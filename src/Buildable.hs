@@ -1,37 +1,37 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Buildable where
+module Buildable (Buf (..), SizedStr, SizedBuilder) where
 
-import           Data.String
-import qualified Data.DList                    as D
-import           Data.Char                      ( intToDigit )
-import           Data.Text.Lazy                 ( Text )
-import qualified Data.Text.Lazy.Builder        as T
-import qualified Data.Text.Lazy.Builder.Int    as T
-import           Data.Semigroup                 ( Semigroup(..) )
-import qualified Data.Text.Lazy                as L
-import qualified Data.Text                     as S
+import Data.Char (intToDigit)
+import qualified Data.DList as D
+import Data.Kind (Type)
+import Data.String
+import qualified Data.Text as S
+import Data.Text.Lazy (Text)
+import qualified Data.Text.Lazy as L
+import qualified Data.Text.Lazy.Builder as T
+import qualified Data.Text.Lazy.Builder.Int as T
 
-newtype Sized a = Sized { unSized :: (a, Int) } deriving (Show, Ord, Eq)
+newtype Sized a = Sized {unSized :: (a, Int)} deriving (Show, Ord, Eq)
 
 type SizedStr = Sized (D.DList Char)
 type SizedBuilder = Sized T.Builder
 
-instance IsString a => IsString (Sized a) where
+instance (IsString a) => IsString (Sized a) where
   fromString s = Sized (fromString s, length s)
 
-instance Semigroup a => Semigroup (Sized a) where
+instance (Semigroup a) => Semigroup (Sized a) where
   Sized (a, b) <> Sized (c, d) = Sized (a <> c, b + d)
   {-# INLINE (<>) #-}
 
-instance MONOID_HEAD => Monoid (Sized a) where
-  mempty  = Sized (mempty, 0)
+instance (Monoid a) => Monoid (Sized a) where
+  mempty = Sized (mempty, 0)
   mappend = (<>)
   {-# INLINE mappend #-}
 
-class MONOID_HEAD => Buildable a where
-  type Output a :: *
+class (Monoid a) => Buf a where
+  type Output a :: Type
 
   str :: String -> a
 
@@ -56,7 +56,7 @@ class MONOID_HEAD => Buildable a where
 
   finalize :: a -> Output a
 
-instance Buildable SizedStr where
+instance Buf SizedStr where
   type Output SizedStr = String
   str a = Sized (D.fromList a, length a)
   singleton c = Sized (D.singleton c, 1)
@@ -65,7 +65,7 @@ instance Buildable SizedStr where
   repeatN n c = Sized (D.replicate n c, n)
   size = snd . unSized
 
-instance Buildable SizedBuilder where
+instance Buf SizedBuilder where
   type Output SizedBuilder = Text
   str a = Sized (fromString a, length a)
   sText a = Sized (T.fromText a, S.length a)
@@ -73,4 +73,4 @@ instance Buildable SizedBuilder where
   singleton c = Sized (T.singleton c, 1)
   digit c = Sized (T.hexadecimal c, 1)
   finalize = T.toLazyText . fst . unSized
-  size     = snd . unSized
+  size = snd . unSized
