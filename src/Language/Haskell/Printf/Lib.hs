@@ -21,6 +21,7 @@ import Language.Haskell.TH.Syntax
 import Buf (
   SizedBuilder,
   SizedStr,
+  SizedStrictBuilder,
   finalize,
  )
 import Control.Monad (mapAndUnzipM)
@@ -30,7 +31,7 @@ import Parser.Types hiding (
   width,
  )
 
-data OutputType = OutputString | OutputText
+data OutputType = OutputString | OutputText | OutputStrictText
   deriving (Show, Eq, Ord, Generic, Enum, Bounded)
 
 {- | Takes a format string as input and produces a tuple @(args, outputExpr)@.
@@ -57,6 +58,7 @@ toSplices s' ot = case parseStr s' of
   otype = case ot of
     OutputString -> [t|SizedStr|]
     OutputText -> [t|SizedBuilder|]
+    OutputStrictText -> [t|SizedStrictBuilder|]
 
 extractExpr :: Atom -> Q ([Name], ExpQ)
 extractExpr (Str s') = return ([], [|fromString $(stringE s')|])
