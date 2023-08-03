@@ -1,9 +1,12 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Buf (Buf (..), SizedStr, SizedBuilder) where
+module Buf (Buf (..), SizedStr, SizedBuilder, SizedStrictBuilder) where
 
 import Data.Char (intToDigit)
+import Data.Coerce
 import qualified Data.DList as D
 import Data.Kind (Type)
 import Data.String
@@ -15,8 +18,12 @@ import qualified Data.Text.Lazy.Builder.Int as T
 
 newtype Sized a = Sized {unSized :: (a, Int)} deriving (Show, Ord, Eq)
 
+newtype StrictBuilder = StrictBuilder {unStrictBuilder :: T.Builder}
+  deriving (Eq, Ord, Show, IsString, Semigroup, Monoid)
+
 type SizedStr = Sized (D.DList Char)
 type SizedBuilder = Sized T.Builder
+type SizedStrictBuilder = Sized StrictBuilder
 
 instance (IsString a) => IsString (Sized a) where
   fromString s = Sized (fromString s, length s)
@@ -74,3 +81,13 @@ instance Buf SizedBuilder where
   digit c = Sized (T.hexadecimal c, 1)
   finalize = T.toLazyText . fst . unSized
   size = snd . unSized
+
+instance Buf SizedStrictBuilder where
+  type Output SizedStrictBuilder = S.Text
+  str = coerce $ str @SizedBuilder
+  sText = coerce $ sText @SizedBuilder
+  lText = coerce $ lText @SizedBuilder
+  singleton = coerce $ singleton @SizedBuilder
+  digit = coerce $ digit @SizedBuilder
+  finalize = L.toStrict . coerce (finalize @SizedBuilder)
+  size = coerce $ size @SizedBuilder

@@ -20,6 +20,7 @@ your input must be an instance of "Bounded".
 module Language.Haskell.Printf (
   s,
   t,
+  st,
   p,
   hp,
 ) where
@@ -75,6 +76,12 @@ s = quoter $ \s' -> do
 t :: QuasiQuoter
 t = quoter $ \s' -> do
   (lhss, rhs) <- toSplices s' OutputText
+  return $ LamE lhss rhs
+
+-- | Behaves identically to 's', but produces strict 'Data.Text.Text'.
+st :: QuasiQuoter
+st = quoter $ \s' -> do
+  (lhss, rhs) <- toSplices s' OutputStrictText
   return $ LamE lhss rhs
 
 {- | Like 's', but prints the resulting string to @stdout@.
